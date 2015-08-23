@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+    h1 System informations
+
+    dl.dl-horizontal
+        dt Hostname
+        dd= hostname
+        dt Platform
+        dd= platform
+        dt Uptime
+        dd= uptime
+        dt Loadavg
+        dd= loadavg
+        dt Memory (free / total)
+        dd= freemem + ' / ' + totalmem

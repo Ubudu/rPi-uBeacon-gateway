@@ -1,7 +1,6 @@
 'use strict';
 
 var express = require('express');
-var ip = require('ip');
 var os = require('os');
 var router = express.Router();
 
