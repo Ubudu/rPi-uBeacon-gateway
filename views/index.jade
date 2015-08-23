@@ -1,0 +1,33 @@
+extends layout
+
+block content
+    .jumbotron
+        h1 Ubudu rPi
+        p Welcome to the Ubudu rPi management interface
+        p
+            a.btn.btn-primary.btn-lg(href='/configure-my-beacon') Configure my beacon
+
+    .row
+        .col-lg-4.col-md-6
+            h2 Network infos
+            p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                | ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+            p
+                a.btn.btn-primary(href='/network-infos') View details »
+
+        .col-lg-4.col-md-6
+            h2 System infos
+            p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                | ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+            p
+                a.btn.btn-primary(href='/system-infos') View details »
+
+        .col-lg-4.col-md-6
+            h2 Mesh network
+            p
+                | Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh,
+                | ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+            p
+                a.btn.btn-primary(href='/mesh-network') View details »

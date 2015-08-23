@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+var http = require('http');
+var debug = require('debug')('web');
+var app = require('../app');
+var io = require('../io');
+
+// Check that all the required configuration options are set
+if (process.env.UART_SERIAL_PORT == null) {
+    throw new Error('Invalid configuration - UART serial port not specified');
+}
+if (process.env.UART_BAUD_RATE == null) {
+    throw new Error('Invalid configuration - UART baud rate not specified');
+}
+
+var server = http.Server(app);
+
+io.attach(server);
+
+server.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+});

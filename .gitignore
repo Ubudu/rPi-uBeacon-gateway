@@ -1,0 +1,9 @@
+# IntelliJ IDE files
+.idea/
+
+# Dependencies
+node_modules
+
+# ENV & Procfile files
+.env.dev
+Procfile.dev

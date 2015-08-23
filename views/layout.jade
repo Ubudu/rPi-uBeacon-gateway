@@ -1,0 +1,25 @@
+doctype html
+html
+    head
+        title Ubudu rPi management
+        meta(name='viewport' content='width=device-width, initial-scale=1')
+        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        block main
+            block header
+                include common/header
+
+            .container
+                block content
+
+            block footer
+                include common/footer
+
+    block javascripts
+        script(src="/javascripts/modernizr.min.js")
+        script(src="/javascripts/jquery.min.js")
+        script(src="/javascripts/bootstrap.min.js")
+        script(src="/socket.io/socket.io.js")
+        script(type="text/javscript").
+            var socket = io.connect();
