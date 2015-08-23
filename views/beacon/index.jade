@@ -1,0 +1,111 @@
+extends ../layout
+
+mixin staticField(fieldLabel, fieldValue)
+    .form-group
+        label.col-sm-4.control-label=fieldLabel
+        .col-sm-8
+            p.form-control-static=fieldValue
+
+mixin booleanOnOffField(fieldLabel, fieldName, fieldValue)
+    .form-group
+        label.col-sm-4.control-label=fieldLabel
+        .col-sm-8
+            label.radio-inline
+                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
+                | On
+            label.radio-inline
+                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
+                | Off
+
+mixin booleanYesNoField(fieldLabel, fieldName, fieldValue)
+    .form-group
+        label.col-sm-4.control-label=fieldLabel
+        .col-sm-8
+            label.radio-inline
+                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
+                | Yes
+            label.radio-inline
+                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
+                | No
+
+block content
+    h1 Beacon configuration
+
+    p.muted RTC Time: #{beaconData.rtcTime}
+
+    form(method='post', class='form-horizontal')
+        ul.nav.nav-tabs(role='tablist')
+            li.active(role='presentation')
+                a(href='#hardware', aria-controls='hardware', role='tab', data-toggle='tab') Hardware infos
+            li(role='presentation')
+                a(href='#advertising', aria-controls='advertising', role='tab', data-toggle='tab')
+                    | Advertising infos&nbsp;
+                    span.glyphicon.glyphicon-edit
+            li(role='presentation')
+                a(href='#mesh', aria-controls='mesh', role='tab', data-toggle='tab')
+                    | Mesh infos&nbsp;
+                    span.glyphicon.glyphicon-edit
+        .tab-content
+            fieldset#hardware.tab-pane.active(role='tabpanel')
+                +staticField('Serial number', beaconData.serialNumber)
+                +staticField('MAC address', beaconData.macAddress)
+                +staticField('Hardware model', beaconData.hardwareModel)
+                +staticField('Hardware version', beaconData.hardwareVersion)
+                +staticField('Firmware version', beaconData.firmwareVersion)
+                +staticField('Firmware build', beaconData.firmwareBuild)
+            fieldset#advertising.tab-pane(role='tabpanel')
+                +booleanOnOffField('Advertising state', 'advertisingState', beaconData.advertisingState)
+                .form-group
+                    label.col-sm-4.control-label Advertising interval
+                    .col-sm-3
+                        .input-group
+                            input.form-control(type='number', min=60, max=10000, name='advertisingInterval', required, value=beaconData.advertisingInterval)
+                            span.input-group-addon ms
+                .form-group
+                    label.col-sm-4.control-label Proximity UUID
+                    .col-sm-6
+                        input.form-control(type='text', name='uuid', required, value=beaconData.uuid, data-inputmask="'mask': 'hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh'")
+                .form-group
+                    label.col-sm-4.control-label Major
+                    .col-sm-3
+                        input.form-control(type='number', name='major', required, value=beaconData.major, min=1, max=65535)
+                .form-group
+                    label.col-sm-4.control-label Minor
+                    .col-sm-3
+                        input.form-control(type='number', name='minor', required, value=beaconData.minor, min=1, max=65535)
+                .form-group
+                    label.col-sm-4.control-label Measured strength
+                    .col-sm-3
+                        .input-group
+                            input.form-control(type='number', name='measuredStrength', value=beaconData.measuredStrength, min=-255, max=0)
+                            span.input-group-addon dB
+            fieldset#mesh.tab-pane(role='tabpanel')
+                +booleanYesNoField('Mesh enabled ?', 'meshSettings[enabled]', beaconData.meshSettings.enabled)
+                +booleanYesNoField('Accept unauthenticated connections ?', 'meshSettings[allow_non_auth_connections]', beaconData.meshSettings.allow_non_auth_connections)
+                +booleanYesNoField('Always connectable ?', 'meshSettings[always_connectable]', beaconData.meshSettings.always_connectable)
+                +booleanYesNoField('Enable mesh window ?', 'meshSettings[enable_mesh_window]', beaconData.meshSettings.enable_mesh_window)
+                #mesh_window_settings(style=beaconData.meshSettings.enable_mesh_window ? undefined : 'display: none')
+                    .form-group
+                        label.col-sm-4.control-label Mesh window start hour
+                        .col-sm-3
+                            .input-group
+                                input.form-control(type='number', name='meshSettings[mesh_window_on_hour]', required, min=0, max=23, value=beaconData.meshSettings.mesh_window_on_hour)
+                                span.input-group-addon :00
+                    .form-group
+                        label.col-sm-4.control-label Mesh window duration
+                        .col-sm-3
+                            .input-group
+                                input.form-control(type='number', name='meshSettings[mesh_window_duration]', required, min=0, max=60, step=10, value=beaconData.meshSettings.mesh_window_duration)
+                                span.input-group-addon minutes
+                .form-group
+                    label.col-sm-4.control-label Mesh network UUID
+                    .col-sm-6
+                        input.form-control(type='text', name='meshNetworkUUID', required, value=beaconData.meshNetworkUUID, data-inputmask="'mask': 'hhhhhhhh-hhhh-hhhh-hhhh-hhhhhhhhhhhh'")
+                .form-group
+                    label.col-sm-4.control-label Mesh device ID
+                    .col-sm-3
+                        input.form-control(type='number', name='meshDeviceId', required, min=1, max=32768, value=beaconData.meshDeviceId)
+        button.btn.btn-primary(type="submit") Update
+
+block append javascripts
+    script(src='/javascripts/beacon/form.js')

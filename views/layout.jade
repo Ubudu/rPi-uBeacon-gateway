@@ -17,9 +17,11 @@ html
                 include common/footer
 
     block javascripts
-        script(src="/javascripts/modernizr.min.js")
-        script(src="/javascripts/jquery.min.js")
-        script(src="/javascripts/bootstrap.min.js")
-        script(src="/socket.io/socket.io.js")
-        script(type="text/javscript").
+        script(src='/javascripts/modernizr.min.js')
+        script(src='/javascripts/jquery.min.js')
+        script(src='/javascripts/bootstrap.min.js')
+        script(src='/javascripts/jquery.inputmask.min.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/javascripts/app.js')
+        script(type='text/javscript').
             var socket = io.connect();
