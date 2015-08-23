@@ -11,6 +11,9 @@ if (process.env.UART_SERIAL_PORT == null) {
 if (process.env.UART_BAUD_RATE == null) {
     throw new Error('Invalid configuration - UART baud rate not specified');
 }
+if (process.env.NETWORK_INTERFACE_NAME == null) {
+    throw new Error('Invalid configuration - Network interface name not specified');
+}
 
 var server = http.Server(app);
 

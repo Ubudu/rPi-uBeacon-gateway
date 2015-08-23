@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+    h1 Network configuration
+
+    each networkInterface in networkInterfaceTypes
+        dl.dl-horizontal
+            dt Type
+            dd= networkInterface.family
+            dt Address
+            dd= networkInterface.address
+            dt Netmask
+            dd= networkInterface.netmask
+            dt MAC Address
+            dd= networkInterface.mac
