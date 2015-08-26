@@ -7,6 +7,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var _ = require('lodash');
 
 var app = express();
 
@@ -21,9 +22,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Middleware to add
+// Middleware to add default header section
 app.use(function (req, res, next) {
     res.locals.headerSection = '';
+    next();
+});
+
+// Middleware to add some template helpers
+var helpers = require('./lib/template-helpers');
+app.use(function(req, res, next) {
+    _.assign(res.locals, helpers);
     next();
 });
 

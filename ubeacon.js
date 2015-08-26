@@ -3,6 +3,7 @@
 var uBeaconLib = require('node-ubeacon-uart-lib');
 var async = require('async');
 var debug = require('debug')('uart');
+var observer = require('node-observer');
 
 var ubeacon = new uBeaconLib.UBeaconUARTController(process.env.UART_SERIAL_PORT, process.env.UART_BAUD_RATE);
 
@@ -329,5 +330,49 @@ ubeacon.updateData = function(beaconData, callback) {
         }
     );
 };
+
+// Relay beacon events
+ubeacon.on(ubeacon.EVENTS.BUTTON, function(isPressed, eventType) {
+    debug('BUTTON:: Pressed: ' + isPressed + ', Event type: ' + eventType);
+    var data = {
+        timestamp: (new Date()).getTime(),
+        isPressed: isPressed,
+        eventType: eventType
+    };
+    observer.send(this, 'ubeacon:button', data);
+});
+
+ubeacon.on(ubeacon.EVENTS.CONNECTED, function(connected, connectionInfo) {
+    debug('CONNECTED:: Connected: ' + connected);
+    debug('Infos', connectionInfo);
+    var data = {
+        timestamp: (new Date()).getTime(),
+        connected: connected,
+        connectionInfo: connectionInfo
+    };
+    observer.send(this, 'ubeacon:connection', data);
+});
+
+ubeacon.on(ubeacon.EVENTS.MESH_MSG__USER, function(dstAddr, msgType, msg) {
+    var data = {
+        timestamp: (new Date()).getTime(),
+        dstAddr: dstAddr,
+        msgType: msgType,
+        msg: msg
+    };
+    debug('MESSAGE:: Message: ' + msg + ' from ' + dstAddr);
+    observer.send(this, 'ubeacon:message', data);
+});
+
+ubeacon.on(ubeacon.EVENTS.MESH_MSG__ACK, function(dstAddr, msgType, status) {
+    var data = {
+        timestamp: (new Date()).getTime(),
+        dstAddr: dstAddr,
+        msgType: msgType,
+        status: status
+    };
+    debug('MESSAGE:: ACK from ' + dstAddr + ' with status ' + status);
+    observer.send(this, 'ubeacon:ack', data);
+});
 
 module.exports = ubeacon;

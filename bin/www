@@ -4,6 +4,7 @@ var debug = require('debug')('web');
 var app = require('../app');
 var io = require('../io');
 
+
 // Check that all the required configuration options are set
 if (process.env.UART_SERIAL_PORT == null) {
     throw new Error('Invalid configuration - UART serial port not specified');
@@ -16,7 +17,6 @@ if (process.env.NETWORK_INTERFACE_NAME == null) {
 }
 
 var server = http.Server(app);
-
 io.attach(server);
 
 server.listen(app.get('port'), function() {

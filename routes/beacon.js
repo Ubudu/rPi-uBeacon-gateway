@@ -33,7 +33,7 @@ var validateForm = form(
 );
 
 /* GET /configure-my-beacon page */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
     var connected = ubeacon.serialPort.isOpen();
 
     if (connected) {

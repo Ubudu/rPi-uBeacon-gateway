@@ -28,3 +28,32 @@ p.copyright {
     text-align: center;
     margin: 20px auto;
 }
+
+/* Infos */
+@media (min-width:768px) {
+    dl.dl-horizontal.dl-large > dt {
+        display: inline-block;
+        width:33.33333333333%;
+        padding-top: 10px;
+        margin-bottom: 15px;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+    dl.dl-horizontal.dl-large > dd {
+        display: inline-block;
+        margin-left: 0px;
+        width:66.66666666666%;
+        padding-top: 10px;
+        margin-bottom: 15px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* Logs table */
+
+#mesh-logs-container td.data {
+    word-wrap: break-word;
+}

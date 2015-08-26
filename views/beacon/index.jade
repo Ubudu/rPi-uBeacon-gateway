@@ -1,33 +1,5 @@
 extends ../layout
 
-mixin staticField(fieldLabel, fieldValue)
-    .form-group
-        label.col-sm-4.control-label=fieldLabel
-        .col-sm-8
-            p.form-control-static=fieldValue
-
-mixin booleanOnOffField(fieldLabel, fieldName, fieldValue)
-    .form-group
-        label.col-sm-4.control-label=fieldLabel
-        .col-sm-8
-            label.radio-inline
-                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
-                | On
-            label.radio-inline
-                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
-                | Off
-
-mixin booleanYesNoField(fieldLabel, fieldName, fieldValue)
-    .form-group
-        label.col-sm-4.control-label=fieldLabel
-        .col-sm-8
-            label.radio-inline
-                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
-                | Yes
-            label.radio-inline
-                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
-                | No
-
 block content
     h1 Beacon configuration
 
@@ -47,12 +19,13 @@ block content
                     span.glyphicon.glyphicon-edit
         .tab-content
             fieldset#hardware.tab-pane.active(role='tabpanel')
-                +staticField('Serial number', beaconData.serialNumber)
-                +staticField('MAC address', beaconData.macAddress)
-                +staticField('Hardware model', beaconData.hardwareModel)
-                +staticField('Hardware version', beaconData.hardwareVersion)
-                +staticField('Firmware version', beaconData.firmwareVersion)
-                +staticField('Firmware build', beaconData.firmwareBuild)
+                dl.dl-horizontal.dl-large
+                    +infoField('Serial number', beaconData.serialNumber)
+                    +infoField('MAC address', beaconData.macAddress)
+                    +infoField('Hardware model', beaconData.hardwareModel)
+                    +infoField('Hardware version', beaconData.hardwareVersion)
+                    +infoField('Firmware version', beaconData.firmwareVersion)
+                    +infoField('Firmware build', beaconData.firmwareBuild)
             fieldset#advertising.tab-pane(role='tabpanel')
                 +booleanOnOffField('Advertising state', 'advertisingState', beaconData.advertisingState)
                 .form-group
@@ -105,7 +78,7 @@ block content
                     label.col-sm-4.control-label Mesh device ID
                     .col-sm-3
                         input.form-control(type='number', name='meshDeviceId', required, min=1, max=32768, value=beaconData.meshDeviceId)
-        button.btn.btn-primary(type="submit") Update
+        button.btn.btn-primary.btn-lg(type="submit") Update
 
 block append javascripts
     script(src='/javascripts/beacon/form.js')

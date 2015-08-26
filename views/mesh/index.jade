@@ -1,0 +1,68 @@
+extends ../layout
+
+block content
+    h1 Mesh network
+
+    section
+        h2 Mesh infos
+        dl.dl-horizontal.dl-large
+            dt Mesh enabled ?
+            dd
+                - if (beaconData.meshSettings.enabled)
+                    | Yes
+                - else
+                    | No
+            dt Accept unauthenticated connections ?
+            dd
+                - if (beaconData.meshSettings.allow_non_auth_connections)
+                    | Yes
+                - else
+                    | No
+            dt Always connectable ?
+            dd
+                - if (beaconData.meshSettings.always_connectable)
+                    | Yes
+                - else
+                    | No
+            dt Mesh window enabled ?
+            dd
+                - if (beaconData.meshSettings.enable_mesh_window)
+                    | Yes (#{beaconData.meshSettings.mesh_window_duration} minutes starting from #{beaconData.meshSettings.mesh_window_on_hour}:00)
+                - else
+                    | No
+            dt Mesh network UUID
+            dd=uuid(beaconData.meshNetworkUUID)
+            dt Mesh device ID
+            dd=beaconData.meshDeviceId
+
+    section
+        h2 Send message
+        form#mesh-send-form(action='/mesh-network/messages')
+            .row
+                .col-md-3
+                    .form-group
+                        label.sr-only Destination
+                        input.form-control.input-lg#mesh-send-address(type='number', min=1, max=3768, placeholder='Destination address', name='address')
+                .col-md-6
+                    .form-group
+                        label.sr-only Message
+                        input.form-control.input-lg#mesh-send-message(placeholder='Message (limited to 16 bytes)', name='message')
+                .col-md-3
+                    .form-group
+                        button.btn.btn-primary.btn-lg(type='submit')
+                            | Send
+                            | &nbsp;
+                            span.glyphicon.glyphicon-send
+
+    section
+        h2 Mesh logs
+        table#mesh-logs-container.table.table-striped.table-hover(style="table-layout: fixed")
+            thead
+                tr
+                    th(style="width: 20%") Timestamp
+                    th(style="width: 50%") Event
+                    th(style="width: 30%") Data
+            tbody
+
+block append javascripts
+    script(src='/javascripts/mesh/messaging.js')

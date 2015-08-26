@@ -1,4 +1,31 @@
 doctype html
+
+mixin infoField(fieldLabel, fieldValue)
+    dt=fieldLabel
+    dd=fieldValue
+
+mixin booleanOnOffField(fieldLabel, fieldName, fieldValue)
+    .form-group
+        label.col-sm-4.control-label=fieldLabel
+        .col-sm-8
+            label.radio-inline
+                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
+                | On
+            label.radio-inline
+                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
+                | Off
+
+mixin booleanYesNoField(fieldLabel, fieldName, fieldValue)
+    .form-group
+        label.col-sm-4.control-label=fieldLabel
+        .col-sm-8
+            label.radio-inline
+                input(type='radio', name=fieldName, value=1, checked=(fieldValue == true))
+                | Yes
+            label.radio-inline
+                input(type='radio', name=fieldName, value=0, checked=(fieldValue == false))
+                | No
+
 html
     head
         title Ubudu rPi management
@@ -17,11 +44,10 @@ html
                 include common/footer
 
     block javascripts
-        script(src='/javascripts/modernizr.min.js')
-        script(src='/javascripts/jquery.min.js')
-        script(src='/javascripts/bootstrap.min.js')
-        script(src='/javascripts/jquery.inputmask.min.js')
+        script(src='/javascripts/vendor/modernizr.min.js')
+        script(src='/javascripts/vendor/jquery.min.js')
+        script(src='/javascripts/vendor/bootstrap.min.js')
+        script(src = '/javascripts/vendor/moment.min.js')
+        script(src='/javascripts/vendor/jquery.inputmask.min.js')
         script(src='/socket.io/socket.io.js')
         script(src='/javascripts/app.js')
-        script(type='text/javscript').
-            var socket = io.connect();

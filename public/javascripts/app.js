@@ -1,5 +1,8 @@
 'use strict';
 
+// App namespace
+window.UBU = {};
+
 Inputmask.extendDefinitions({
     'h': {
         validator: '[a-fA-F0-9]',
@@ -10,5 +13,7 @@ Inputmask.extendDefinitions({
 
 $(function() {
     // Apply mask to inputs
-    $(':input').inputmask();
+    $('[data-inputmask]').inputmask();
+
+    UBU.socket = io.connect();
 });
