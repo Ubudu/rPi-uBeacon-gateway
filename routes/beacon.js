@@ -32,47 +32,42 @@ var validateForm = form(
     field('meshDeviceId').trim().required().toInt().custom(function(val){ return validator.isInRange.call(validator,val,0x0001,0x8000); })
 );
 
-/* GET /configure-my-beacon page */
-router.get('/', function(req, res, next) {
-    var connected = ubeacon.serialPort.isOpen();
-
-    if (connected) {
-        ubeacon.getData(function(err, beaconData) {
-            if (err != null) {
-                return next(err);
-            }
-            return res.render('beacon/index', { beaconData: beaconData });
-        });
+// Check that the beacon is connected
+router.use(function(req, res, next) {
+    if (ubeacon.serialPort.isOpen()) {
+        return next();
     } else {
-        // TODO Handle hot plug
         return next(new Error('Beacon not connected'));
     }
 });
 
+/* GET /configure-my-beacon page */
+router.get('/', function(req, res, next) {
+    ubeacon.getData(function(err, beaconData) {
+        if (err != null) {
+            return next(err);
+        }
+        return res.render('beacon/index', { beaconData: beaconData });
+    });
+});
+
 /* POST /configure-my-beacon */
 router.post('/', validateForm, function(req, res) {
-    var connected = ubeacon.serialPort.isOpen();
-
-    if (connected) {
-        if (!req.form.isValid) {
-            ubeacon.getData(function(err, beaconData) {
-                if (err != null) {
-                    return next(err);
-                }
-                return res.render('beacon/index', { beaconData: beaconData, formErrors: req.form.getErrors() });
-            });
-        } else {
-            console.log(req.form);
-            ubeacon.updateData(req.form, function(err, newBeaconData) {
-                if (err != null) {
-                    return next(err);
-                }
-                return res.render('beacon/index', { beaconData: newBeaconData });
-            });
-        }
+    if (!req.form.isValid) {
+        ubeacon.getData(function(err, beaconData) {
+            if (err != null) {
+                return next(err);
+            }
+            return res.render('beacon/index', { beaconData: beaconData, formErrors: req.form.getErrors() });
+        });
     } else {
-        // TODO Handle hot plug
-        return next(new Error('Beacon not connected'));
+        console.log(req.form);
+        ubeacon.updateData(req.form, function(err, newBeaconData) {
+            if (err != null) {
+                return next(err);
+            }
+            return res.render('beacon/index', { beaconData: newBeaconData });
+        });
     }
 });
 

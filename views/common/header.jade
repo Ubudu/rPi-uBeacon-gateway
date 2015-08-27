@@ -11,7 +11,9 @@ nav.navbar.navbar-inverse.navbar-fixed-top
         #navbar.collapse.navbar-collapse
             ul.nav.navbar-nav
                 li(class= (headerSection === 'beacon_configuration') ? 'active': undefined)
-                    a(href='/configure-my-beacon') Configure my beacon
+                    a#configure-my-beacon-header-link(href='/configure-my-beacon')
+                        | Configure my beacon &nbsp;
+                        span.glyphicon.glyphicon-refresh.spin#beacon-status
                 li(class= (headerSection === 'network_infos') ? 'active': undefined)
                     a(href='/network-infos') Network
                 li(class= (headerSection === 'system_infos') ? 'active': undefined)

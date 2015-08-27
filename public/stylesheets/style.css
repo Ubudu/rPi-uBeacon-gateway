@@ -9,9 +9,53 @@ body {
     margin-bottom: 80px;
 }
 
+/* Utils */
+.spin {
+    -webkit-animation: spin 2s infinite linear;
+    -moz-animation: spin 2s infinite linear;
+    -o-animation: spin 2s infinite linear;
+    animation: spin 2s infinite linear;
+}
+
+@-moz-keyframes spin {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+    to {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* Header */
 .navbar-brand.logo {
     padding: 5px 15px;
+}
+
+#configure-my-beacon-header-link {
+    padding-top: 14px;
+}
+
+#beacon-status {
+    font-size: 1.6em;
+    top: 5px;
 }
 
 /* Footer */
@@ -53,7 +97,6 @@ p.copyright {
 }
 
 /* Logs table */
-
 #mesh-logs-container td.data {
     word-wrap: break-word;
 }
