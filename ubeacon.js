@@ -414,3 +414,5 @@ var cmdBytes = {
     'led_state': ubeacon.uartCmd.led,
     'rtc_time': ubeacon.uartCmd.RTCTime
 };
+
+module.exports = ubeacon;
