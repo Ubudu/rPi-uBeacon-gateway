@@ -1,4 +1,4 @@
-# Web GUI
+# Raspberry Pi uBeacon Gateway
 
 ## Introduction
 
@@ -43,5 +43,3 @@ There are also multiple options, [https://github.com/Unitech/pm2](PM2) is one of
 To use PM2, simply copy ```.env.dist``` into ```.env```, update the config to suit your needs and run:
 
     pm2 start bin/www
-
-##
