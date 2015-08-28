@@ -24,16 +24,21 @@ $(function() {
                 }
                 break;
             case 'mesh-receive':
-                event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
-                trClass = 'success';
+                if (logData.msg) {
+                     event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
+                }
+                else {
+                     event = '<span class="glyphicon glyphicon-log-in"></span> Received response from node ' + logData.dstAddr;
+                }
+                trClass = 'info';
                 break;
             case 'button-pressed':
                 if (logData.isPressed) {
                     event = '<span class="glyphicon glyphicon-import"></span> Pressed button on the beacon connected to the box';
-                    trClass = 'info';
+                    trClass = 'default';
                 } else {
                     event = '<span class="glyphicon glyphicon-export"></span> Released button on the beacon connected to the box';
-                    trClass = 'info';
+                    trClass = 'default';
                 }
                 break;
             case 'connection':
@@ -42,7 +47,7 @@ $(function() {
                     trClass ='success';
                 } else {
                     event = '<span class="glyphicon glyphicon-ban-circle"></span> A device disconnected from the beacon connected to the box';
-                    trClass= 'info';
+                    trClass= 'warning';
                 }
                 break;
             default:

@@ -375,4 +375,15 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__ACK, function(dstAddr, msgType, status) {
     observer.send(this, 'ubeacon:ack', data);
 });
 
+ubeacon.on(ubeacon.EVENTS.MESH_MSG__REMOTE_MANAGEMENT, function(dstAddr, msgType, status) {
+    var data = {
+        timestamp: (new Date()).getTime(),
+        dstAddr: dstAddr,
+        msgType: msgType,
+        status: status
+    };
+    debug('MESSAGE:: RESPONSE from ' + dstAddr + ' with status ' + status);
+    observer.send(this, 'ubeacon:message', data);
+});
+
 module.exports = ubeacon;
