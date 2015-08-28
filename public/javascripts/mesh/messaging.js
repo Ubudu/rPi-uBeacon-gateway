@@ -40,9 +40,13 @@ $(function() {
                 }
                 trClass = 'info';
                 break;
-            case 'mesh-remote-management-receive':
-                event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] +' = ' + logData.value + ' from node ' + logData.srcAddr;
+            case 'mesh-remote-management-response':
+                event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] + ' = ' + logData.value + ' from node ' + logData.srcAddr;
                 trClass = 'success';
+                break;
+            case 'mesh-remote-management-receive':
+                event = '<span class="glyphicon glyphicon-log-in"></span> Received remote management message about ' + humanReadableProperties[logData.cmd] + ' from node ' + logData.srcAddr;
+                trClass = 'info';
                 break;
             case 'button-pressed':
                 if (logData.isPressed) {
@@ -72,15 +76,68 @@ $(function() {
     };
 
     /* Generic messaging */
+    var genericSwitchAddressFormatBtn = $('#mesh-send-generic-change-address-format');
+    var genericAddressInput = $('#mesh-send-generic-address');
+    var genericAddressHex = $('#mesh-send-generic-address-hex');
+    var genericAddressNumeric = $('#mesh-send-generic-address-numeric');
+    var genericAddressFormat = 'hex';
+    genericAddressHex.on('click', function(event) {
+        event.preventDefault();
+
+        // Unset the 'Numeric' link
+        genericAddressNumeric.parent().removeClass('active');
+        genericAddressNumeric.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'Hex' link
+        genericAddressHex.parent().addClass('active');
+        genericAddressHex.find('span.glyphicon').addClass('glyphicon-ok');
+        genericSwitchAddressFormatBtn.html('0x &nbsp;<span class="caret"></span>');
+
+        // Convert field to hex if necessary
+        if (genericAddressFormat !== 'hex') {
+            var oldValue = genericAddressInput.val();
+            if (oldValue) {
+                var value = Number(oldValue).toString(16);
+                genericAddressInput.val(value);
+            }
+            genericAddressFormat = 'hex';
+        }
+    });
+    genericAddressNumeric.on('click', function(event) {
+        event.preventDefault();
+
+        // Unset the 'Hex' link
+        genericAddressHex.parent().removeClass('active');
+        genericAddressHex.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'Numeric' link
+        genericAddressNumeric.parent().addClass('active');
+        genericAddressNumeric.find('span.glyphicon').addClass('glyphicon-ok');
+        genericSwitchAddressFormatBtn.html('Int &nbsp;<span class="caret"></span>');
+
+        // Convert field to numeric if necessary
+        if (genericAddressFormat !== 'numeric') {
+            var oldValue = genericAddressInput.val();
+            if (oldValue) {
+                var value = parseInt(oldValue, 16);
+                genericAddressInput.val(value);
+            }
+            genericAddressFormat = 'numeric';
+        }
+    });
+
     var genericMessagingForm = $('#mesh-send-generic-form');
-    var genericDstAddrInput = $('#mesh-send-generic-address');
     var genericMsgInput = $('#mesh-send-generic-message');
     genericMessagingForm.on('submit', function(event) {
         event.preventDefault();
 
+        var rawDstAddr = genericAddressInput.val();
+        var dstAddr = genericAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var msg = genericMsgInput.val();
+
         var formData = {
-            dstAddr: parseInt(genericDstAddrInput.val()),
-            msg: genericMsgInput.val()
+            dstAddr: dstAddr,
+            msg: msg
         };
         var url = genericMessagingForm.attr('action');
         $.ajax({
@@ -158,8 +215,10 @@ $(function() {
         // Convert field to hex if necessary
         if (managementAddressFormat !== 'hex') {
             var oldValue = managementAddressInput.val();
-            var value = Number(oldValue).toString(16);
-            managementAddressInput.val(value);
+            if (oldValue) {
+                var value = Number(oldValue).toString(16);
+                managementAddressInput.val(value);
+            }
             managementAddressFormat = 'hex';
         }
     });
@@ -177,7 +236,11 @@ $(function() {
 
         // Convert field to numeric if necessary
         if (managementAddressFormat !== 'numeric') {
-            managementAddressInput.val(parseInt(managementAddressInput.val(), 16));
+            var oldValue = managementAddressInput.val();
+            if (oldValue) {
+                var value = parseInt(oldValue, 16);
+                managementAddressInput.val(value);
+            }
             managementAddressFormat = 'numeric';
         }
     });
@@ -237,8 +300,13 @@ $(function() {
         prependToLog(data);
     });
     UBU.socket.on('ubeacon:remote-management-message', function(data) {
-        data.eventType = 'mesh-remote-management-receive';
-        console.log('remote', data);
+        if (data.rawResponse.indexOf('0d0a', this.length - 4) !== -1) {
+            // We're on the beacon receiving the remote management message
+            data.eventType = 'mesh-remote-management-receive';
+        } else {
+            // We're on the beacon which initiated the remote management message and this is the response
+            data.eventType = 'mesh-remote-management-response';
+        }
         prependToLog(data);
     });
 });

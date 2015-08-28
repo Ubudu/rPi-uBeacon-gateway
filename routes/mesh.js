@@ -32,8 +32,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/generic-messages', function(req, res, next) {
     var data = req.body;
+    data.dstAddr = parseInt(data.dstAddr, 16);
     ubeacon.sendMeshGenericMessage(data.dstAddr, data.msg);
-    data.dstAddr = parseInt(data.dstAddr);
     data.timestamp = (new Date()).getTime();
     data.msgType = 0x02;
     return res.json(data);

@@ -396,6 +396,7 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__REMOTE_MANAGEMENT, function(srcAddr, msgType
         cmdByte: payloadData.cmdByte,
         cmd: cmd
     };
+
     debug('MESSAGE:: Remote management: ' + payloadData.rawResponse);
     observer.send(this, 'ubeacon:remote-management-message', data);
 });
