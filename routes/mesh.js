@@ -16,6 +16,7 @@ router.use(function(req, res, next) {
     if (ubeacon.serialPort.isOpen()) {
         return next();
     } else {
+        process.exit();
         return next(new Error('Beacon not connected'));
     }
 });
