@@ -27,6 +27,18 @@ $(function() {
                 event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
                 trClass = 'success';
                 break;
+            case 'mesh-remote-management-send':
+                if (logData.cmdMode == 'get') {
+                    event = '<span class="glyphicon glyphicon-send"></span> Sent GET ' + humanReadableProperties[logData.cmd] + ' to node ' + logData.dstAddr;
+                } else {
+                    event = '<span class="glyphicon glyphicon-send"></span> Sent SET ' + humanReadableProperties[logData.cmd] + ' to ' + logData.value + ' to node ' + logData.dstAddr;
+                }
+                trClass = 'info';
+                break;
+            case 'mesh-remote-management-receive':
+                event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] +' = ' + logData.value + ' from node ' + logData.srcAddr;
+                trClass = 'success';
+                break;
             case 'button-pressed':
                 if (logData.isPressed) {
                     event = '<span class="glyphicon glyphicon-import"></span> Pressed button on the beacon connected to the box';
@@ -60,6 +72,7 @@ $(function() {
     var genericMsgInput = $('#mesh-send-generic-message');
     genericMessagingForm.on('submit', function(event) {
         event.preventDefault();
+
         var formData = {
             dstAddr: parseInt(genericDstAddrInput.val()),
             msg: genericMsgInput.val()
@@ -82,6 +95,7 @@ $(function() {
     var managementCommandInput = $('#mesh-send-management-command');
     var managementCommandGet = $('#mesh-send-management-command-get');
     var managementCommandSet = $('#mesh-send-management-command-set');
+    var managementPropertySelect = $('#mesh-send-management-property');
     managementCommandGet.on('click', function(event) {
         event.preventDefault();
 
@@ -96,9 +110,12 @@ $(function() {
 
         // Change the value of the hidden 'command' field
         managementCommandInput.val('get');
+
+        // Enable all the properties
+        managementPropertySelect.find('option').removeAttr('disabled');
     });
-    managementCommandSet.on('click', function() {
-        event.preventDefault(event);
+    managementCommandSet.on('click', function(event) {
+        event.preventDefault();
 
         // Unset the 'GET' link
         managementCommandGet.parent().removeClass('active');
@@ -111,6 +128,9 @@ $(function() {
 
         // Change the value of the hidden 'command' field
         managementCommandInput.val('set');
+
+        // Disable all the properties that can't be set
+        managementPropertySelect.find('option[data-lock=1]').attr('disabled', true).removeAttr('selected');
     });
 
     var managementSwitchAddressFormatBtn = $('#mesh-send-management-change-address-format');
@@ -158,11 +178,9 @@ $(function() {
     });
 
     var managementMessagingForm = $('#mesh-send-management-form');
-    var managementPropertySelect = $('#mesh-send-management-property');
     var managementValueInput = $('#mesh-send-management-value');
 
     managementMessagingForm.on('submit', function(event) {
-        console.log('submit');
         event.preventDefault();
 
         var rawDstAddr = managementAddressInput.val();
@@ -190,6 +208,12 @@ $(function() {
         });
     });
 
+    var clearLogsBtn = $('#mesh-logs-clear');
+    clearLogsBtn.on('click', function(event) {
+        event.preventDefault();
+        logsContainer.empty();
+    });
+
     UBU.socket.on('ubeacon:ack', function(data) {
         data.eventType = 'mesh-ack';
         prependToLog(data);
@@ -207,4 +231,22 @@ $(function() {
         data.eventType = 'connection';
         prependToLog(data);
     });
+    UBU.socket.on('ubeacon:remote-management-message', function(data) {
+        data.eventType = 'mesh-remote-management-receive';
+        console.log('remote', data);
+        prependToLog(data);
+    });
 });
+
+var humanReadableProperties = {
+    'mac_address': 'MAC address',
+    'serial_number': 'serial number',
+    'battery_level': 'battery level',
+    'tx_power': 'TX power',
+    'advertising_state': 'advertising state',
+    'proximity_uuid': 'proximity UUID',
+    'major': 'Major',
+    'minor': 'Minor',
+    'led_state': 'LED state',
+    'rtc_time': 'RTC time'
+};

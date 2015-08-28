@@ -375,4 +375,42 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__ACK, function(dstAddr, msgType, status) {
     observer.send(this, 'ubeacon:ack', data);
 });
 
+ubeacon.on(ubeacon.EVENTS.MESH_MSG__REMOTE_MANAGEMENT, function(srcAddr, msgType, payloadData, error) {
+
+    // Retrieve the command from the command bytes
+    var cmd = 'N/A';
+    for (var prop in cmdBytes) {
+        if (cmdBytes.hasOwnProperty(prop)) {
+            if (cmdBytes[prop] === payloadData.cmdByte) {
+                cmd = prop;
+            }
+        }
+    }
+
+    var data = {
+        timestamp: (new Date()).getTime(),
+        srcAddr: srcAddr,
+        msgType: msgType,
+        value: payloadData.responseData,
+        rawResponse: payloadData.rawResponse,
+        cmdByte: payloadData.cmdByte,
+        cmd: cmd
+    };
+    debug('MESSAGE:: Remote management: ' + payloadData.rawResponse);
+    observer.send(this, 'ubeacon:remote-management-message', data);
+});
+
 module.exports = ubeacon;
+
+var cmdBytes = {
+    'mac_address': ubeacon.uartCmd.bdaddr,
+    'serial_number': ubeacon.uartCmd.serialNumber,
+    'battery_level': ubeacon.uartCmd.batteryLevel,
+    'tx_power': ubeacon.uartCmd.txPower,
+    'advertising_state': ubeacon.uartCmd.advertising,
+    'proximity_uuid': ubeacon.uartCmd.uuid,
+    'major': ubeacon.uartCmd.major,
+    'minor': ubeacon.uartCmd.minor,
+    'led_state': ubeacon.uartCmd.led,
+    'rtc_time': ubeacon.uartCmd.RTCTime
+};

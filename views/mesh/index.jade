@@ -42,7 +42,7 @@ block content
                 .col-md-3
                     .form-group
                         label.sr-only Destination
-                        input.form-control.input-lg#mesh-send-generic-address(type='number', min=1, max=3768, placeholder='Destination address', name='address')
+                        input.form-control.input-lg#mesh-send-generic-address(type='number', min=1, max=32768, placeholder='Destination address', name='address')
                 .col-md-6
                     .form-group
                         label.sr-only Message
@@ -95,9 +95,10 @@ block content
                     .form-group
                         label.sr-only Property
                         select.form-control.input-lg#mesh-send-management-property(name='property')
-                            option(value='mac_address') MAC address (0x34)
-                            option(value='serial_number') Serial number (0x37)
-                            option(value='battery_level') Battery level (0x38)
+                            option Please select a property...
+                            option(value='mac_address', data-lock=1) MAC address (0x34)
+                            option(value='serial_number', data-lock=1) Serial number (0x37)
+                            option(value='battery_level', data-lock=1) Battery level (0x38)
                             option(value='tx_power') TX power (0x35)
                             option(value='advertising_state') Advertising state (0x74)
                             option(value='proximity_uuid') Proximity UUID (0x61)
@@ -111,7 +112,7 @@ block content
                         label.sr-only Value
                         .input-group.input-group-lg
                             span.input-group-addon 0x
-                            input.form-control#mesh-send-management-value(type='text', placeholder='Value', name='value')
+                            input.form-control#mesh-send-management-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
                 .col-md-3
                     .form-group
                         button.btn.btn-primary.btn-lg(type='submit')
@@ -119,14 +120,16 @@ block content
                             | &nbsp;
                             span.glyphicon.glyphicon-send
     section
-        h2 Mesh logs
-        table#mesh-logs-container.table.table-striped.table-hover(style="table-layout: fixed")
+        h2
+            | Mesh logs &nbsp;
+            a.text-info#mesh-logs-clear(href='#') clear
+        table.table.table-striped.table-hover(style="table-layout: fixed")
             thead
                 tr
                     th(style="width: 20%") Timestamp
                     th(style="width: 50%") Event
                     th(style="width: 30%") Data
-            tbody
+            tbody#mesh-logs-container
 
 block append javascripts
     script(src='/javascripts/mesh/messaging.js')

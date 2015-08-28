@@ -31,6 +31,7 @@ node_modules
 
 # ENV & Procfile files
 .env
+.env2
 .env.dev
 Procfile
 Procfile.dev

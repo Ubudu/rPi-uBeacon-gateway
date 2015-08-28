@@ -42,14 +42,18 @@ router.post('/generic-messages', function(req, res, next) {
 router.post('/remote-management-messages', function(req, res, next) {
     var data = req.body;
 
-    var dataBytes = hexStringToString(data.value); // TODO Fix this
-    var cmdByte = cmdBytes.hasOwnProperty(data.cmd) ? cmdBytes[data.cmd] : 0x00;
+    var dataBytes = hexStringToString(data.value);
+    var cmdByte = cmdBytes.hasOwnProperty(data.cmd) ? cmdBytes[data.cmd] : 0xFF;
+
     var isGet = (data.cmdMode == 'get');
 
-    var cmdString = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false);
-    ubeacon.sendMeshRemoteManagementMessage(parseInt(data.dstAddr, 16), cmdString.toString());
+    var cmdBuffer = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false);
 
-    data.dstAddr = parseInt(data.dstAddr);
+    ubeacon.sendMeshRemoteManagementMessage(parseInt(data.dstAddr, 16), cmdBuffer.toString(), function() {
+        console.log(arguments);
+    });
+
+    data.dstAddr = parseInt(data.dstAddr, 16);
     data.timestamp = (new Date()).getTime();
     data.msgType = 0x03;
 
@@ -75,7 +79,8 @@ var hexStringToString = function(hexStr)
 {
     var str = '';
     for (var i = 0 ; i < hexStr.length ; i += 2) {
-        str += String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
+        var c = String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
+        str += c;
     }
     return str;
 };
