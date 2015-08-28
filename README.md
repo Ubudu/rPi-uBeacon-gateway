@@ -26,11 +26,11 @@ It's a great tool to ensure multiple processes run simultaneously and with the c
 
 A ```Procfile``` file specifies which processes should run and a ```.env``` file specifies the ENV variables.
 
-To get up and running, copy the ```Procfile.dist``` and ```.env.dist``` into a ```Procfile.dev``` and a ```.env.dev``` and update them to suit your needs.
+To get up and running, copy the ```Procfile.dist``` and ```.env.dist``` into a ```Procfile``` and a ```.env``` and update them to suit your needs.
 
 Now run:
 
-    foreman start -f Procfile.dev -e .env.dev
+    foreman start
 
 [https://github.com/petruisfan/node-supervisor](supervisor) is a great tool in development to ensure the app is restarted whenever there is a JS file change.
 
@@ -39,5 +39,9 @@ With the [http://livereload.com](Chrome LiveReload plugin) installed, in dev mod
 ### Running in production
 
 There are also multiple options, [https://github.com/Unitech/pm2](PM2) is one of them.
+
+To use PM2, simply copy ```.env.dist``` into ```.env```, update the config to suit your needs and run:
+
+    pm2 start bin/www
 
 ##

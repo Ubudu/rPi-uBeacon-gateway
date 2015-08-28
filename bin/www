@@ -1,9 +1,18 @@
 #!/usr/bin/env node
 var http = require('http');
+var fs = require('fs');
 var debug = require('debug')('web');
+
+if (fs.existsSync(__dirname + '/../.env')) {
+    require('dotenv').config({ path: __dirname + '/../.env' });
+} else {
+    console.log('NO ENV FILE: program will not work');
+}
+
 var app = require('../app');
 var io = require('../io');
 
+//
 
 // Check that all the required configuration options are set
 if (process.env.UART_SERIAL_PORT == null) {
