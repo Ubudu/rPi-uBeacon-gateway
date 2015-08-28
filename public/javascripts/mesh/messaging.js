@@ -1,10 +1,6 @@
 'use strict';
 
 $(function() {
-    var form = $('#mesh-send-form');
-    var dstAddrInput = $('#mesh-send-address');
-    var msgInput = $('#mesh-send-message');
-
     var logsContainer = $('#mesh-logs-container');
 
     var prependToLog = function(logData) {
@@ -58,13 +54,17 @@ $(function() {
         logsContainer.prepend(row);
     };
 
-    form.on('submit', function(event) {
+    /* Generic messaging */
+    var genericMessagingForm = $('#mesh-send-generic-form');
+    var genericDstAddrInput = $('#mesh-send-generic-address');
+    var genericMsgInput = $('#mesh-send-generic-message');
+    genericMessagingForm.on('submit', function(event) {
         event.preventDefault();
         var formData = {
-            dstAddr: parseInt(dstAddrInput.val()),
-            msg: msgInput.val()
+            dstAddr: parseInt(genericDstAddrInput.val()),
+            msg: genericMsgInput.val()
         };
-        var url = form.attr('action');
+        var url = genericMessagingForm.attr('action');
         $.ajax({
             type: 'POST',
             url: url,
@@ -72,6 +72,119 @@ $(function() {
             dataType: 'json',
             success: function(data) {
                 data.eventType = 'mesh-send';
+                prependToLog(data);
+            }
+        });
+    });
+
+    /* Remote management messaging */
+    var managementSwitchCommandBtn = $('#mesh-send-management-change-command');
+    var managementCommandInput = $('#mesh-send-management-command');
+    var managementCommandGet = $('#mesh-send-management-command-get');
+    var managementCommandSet = $('#mesh-send-management-command-set');
+    managementCommandGet.on('click', function(event) {
+        event.preventDefault();
+
+        // Unset the 'SET' link
+        managementCommandSet.parent().removeClass('active');
+        managementCommandSet.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'GET' link
+        managementCommandGet.parent().addClass('active');
+        managementCommandGet.find('span.glyphicon').addClass('glyphicon-ok');
+        managementSwitchCommandBtn.html('GET &nbsp;<span class="caret"></span>');
+
+        // Change the value of the hidden 'command' field
+        managementCommandInput.val('get');
+    });
+    managementCommandSet.on('click', function() {
+        event.preventDefault(event);
+
+        // Unset the 'GET' link
+        managementCommandGet.parent().removeClass('active');
+        managementCommandGet.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'SET' link
+        managementCommandSet.parent().addClass('active');
+        managementCommandSet.find('span.glyphicon').addClass('glyphicon-ok');
+        managementSwitchCommandBtn.html('SET &nbsp;<span class="caret"></span>');
+
+        // Change the value of the hidden 'command' field
+        managementCommandInput.val('set');
+    });
+
+    var managementSwitchAddressFormatBtn = $('#mesh-send-management-change-address-format');
+    var managementAddressInput = $('#mesh-send-management-address');
+    var managementAddressHex = $('#mesh-send-management-address-hex');
+    var managementAddressNumeric = $('#mesh-send-management-address-numeric');
+    var managementAddressFormat = 'hex';
+    managementAddressHex.on('click', function(event) {
+        event.preventDefault();
+
+        // Unset the 'Numeric' link
+        managementAddressNumeric.parent().removeClass('active');
+        managementAddressNumeric.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'Hex' link
+        managementAddressHex.parent().addClass('active');
+        managementAddressHex.find('span.glyphicon').addClass('glyphicon-ok');
+        managementSwitchAddressFormatBtn.html('0x &nbsp;<span class="caret"></span>');
+
+        // Convert field to hex if necessary
+        if (managementAddressFormat !== 'hex') {
+            var oldValue = managementAddressInput.val();
+            var value = Number(oldValue).toString(16);
+            managementAddressInput.val(value);
+            managementAddressFormat = 'hex';
+        }
+    });
+    managementAddressNumeric.on('click', function(event) {
+        event.preventDefault();
+
+        // Unset the 'Hex' link
+        managementAddressHex.parent().removeClass('active');
+        managementAddressHex.find('span.glyphicon').removeClass('glyphicon-ok');
+
+        // Set the 'Numeric' link
+        managementAddressNumeric.parent().addClass('active');
+        managementAddressNumeric.find('span.glyphicon').addClass('glyphicon-ok');
+        managementSwitchAddressFormatBtn.html('Int &nbsp;<span class="caret"></span>');
+
+        // Convert field to numeric if necessary
+        if (managementAddressFormat !== 'numeric') {
+            managementAddressInput.val(parseInt(managementAddressInput.val(), 16));
+            managementAddressFormat = 'numeric';
+        }
+    });
+
+    var managementMessagingForm = $('#mesh-send-management-form');
+    var managementPropertySelect = $('#mesh-send-management-property');
+    var managementValueInput = $('#mesh-send-management-value');
+
+    managementMessagingForm.on('submit', function(event) {
+        console.log('submit');
+        event.preventDefault();
+
+        var rawDstAddr = managementAddressInput.val();
+        var dstAddr = managementAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var cmdMode = managementCommandInput.val();
+        var cmd = managementPropertySelect.val();
+        var value = managementValueInput.val();
+
+        var formData = {
+            dstAddr:  dstAddr,
+            cmdMode: cmdMode,
+            cmd: cmd,
+            value: value
+        };
+        var url = managementMessagingForm.attr('action');
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: formData,
+            dataType: 'json',
+            success: function(data) {
+                data.eventType = 'mesh-remote-management-send';
                 prependToLog(data);
             }
         });
@@ -94,5 +207,4 @@ $(function() {
         data.eventType = 'connection';
         prependToLog(data);
     });
-
 });

@@ -10,14 +10,12 @@ $(function() {
             dataType: 'json',
             success: function(data) {
                 if (data.ubeacon.connected) {
-                    console.log('connected');
                     beaconStatusIndicator
                         .removeClass('glyphicon-refresh')
                         .removeClass('spin')
                         .removeClass('text-warning')
                         .addClass('glyphicon-ok-circle');
                 } else {
-                    console.log('disconnected');
                     beaconStatusIndicator
                         .removeClass('glyphicon-ok-circle')
                         .removeClass('spin')

@@ -44,6 +44,7 @@ router.use(function(req, res, next) {
 /* GET /configure-my-beacon page */
 router.get('/', function(req, res, next) {
     ubeacon.getData(function(err, beaconData) {
+        beaconData.serialPort = process.env.UART_SERIAL_PORT;
         if (err != null) {
             return next(err);
         }

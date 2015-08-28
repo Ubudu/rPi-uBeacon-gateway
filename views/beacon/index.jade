@@ -5,6 +5,8 @@ block content
 
     p.muted RTC Time: #{beaconData.rtcTime}
 
+    p.muted Serial Port : #{beaconData.serialPort}
+
     form(method='post', class='form-horizontal')
         ul.nav.nav-tabs(role='tablist')
             li.active(role='presentation')
@@ -78,7 +80,9 @@ block content
                     label.col-sm-4.control-label Mesh device ID
                     .col-sm-3
                         input.form-control(type='number', name='meshDeviceId', required, min=1, max=32768, value=beaconData.meshDeviceId)
-        button.btn.btn-primary.btn-lg(type="submit") Update
+        button.btn.btn-primary.btn-lg(type="submit")
+            | Update &nbsp;
+            span.glyphicon.glyphicon-download-alt
 
 block append javascripts
     script(src='/javascripts/beacon/form.js')
