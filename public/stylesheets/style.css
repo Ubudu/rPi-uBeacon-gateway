@@ -73,6 +73,20 @@ p.copyright {
     margin: 20px auto;
 }
 
+/* Tabs */
+.tab-content {
+    padding-top: 20px;
+}
+
+/* Force black & white glyphicons */
+.glyphicon.white {
+    color: #fff;
+}
+
+.glyphicon.black {
+    color: #000;
+}
+
 /* Infos */
 @media (min-width:768px) {
     dl.dl-horizontal.dl-large > dt {
