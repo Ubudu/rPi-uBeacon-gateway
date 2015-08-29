@@ -1,5 +1,7 @@
 'use strict';
 
+var logsContainer = $('#mesh-logs-container');
+
 $(function() {
 
     /* Generic messaging */
@@ -314,7 +316,6 @@ function sendMeshRemoteManagement( url , dstAddr, cmdMode, cmd, value )
  * 
  */
 var prependToLog = function(logData) {
-    var logsContainer = $('#mesh-logs-container');
 
     var time = moment(new Date(logData.timestamp)).format('YYYY-MM-DD HH:mm:ss');
     var event = 'Event type unknown';
