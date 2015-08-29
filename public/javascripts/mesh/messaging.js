@@ -1,79 +1,6 @@
 'use strict';
 
 $(function() {
-    var logsContainer = $('#mesh-logs-container');
-
-    var prependToLog = function(logData) {
-        var time = moment(new Date(logData.timestamp)).format('YYYY-MM-DD HH:mm:ss');
-        var event = 'Event type unknown';
-        var data = JSON.stringify(logData);
-        var trClass = '';
-
-        switch (logData.eventType) {
-            case 'mesh-send':
-                event = '<span class="glyphicon glyphicon-send"></span> Sent "' + logData.msg + '" to node ' + logData.dstAddr;
-                trClass = 'info';
-                break;
-            case 'mesh-ack':
-                if (logData.status == 1) {
-                    event = '<span class="glyphicon glyphicon-ok-circle"></span> Received ACK-SUCCESS from node ' + logData.dstAddr;
-                    trClass = 'success';
-                } else {
-                    event = '<span class="glyphicon glyphicon-remove-circle"></span> Received ACK-FAILED from node ' + logData.dstAddr;
-                    trClass = 'warning';
-                }
-                break;
-            case 'mesh-receive':
-                if (logData.msg) {
-                     event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
-                }
-                else {
-                     event = '<span class="glyphicon glyphicon-log-in"></span> Received response from node ' + logData.dstAddr;
-                }
-                trClass = 'info';
-                break;
-            case 'mesh-remote-management-send':
-                if (logData.cmdMode == 'get') {
-                    event = '<span class="glyphicon glyphicon-send"></span> Sent GET ' + humanReadableProperties[logData.cmd] + ' to node ' + logData.dstAddr;
-                } else {
-                    event = '<span class="glyphicon glyphicon-send"></span> Sent SET ' + humanReadableProperties[logData.cmd] + ' to ' + logData.value + ' to node ' + logData.dstAddr;
-                }
-                trClass = 'info';
-                break;
-            case 'mesh-remote-management-response':
-                event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] + ' = ' + logData.value + ' from node ' + logData.srcAddr;
-                trClass = 'success';
-                break;
-            case 'mesh-remote-management-receive':
-                event = '<span class="glyphicon glyphicon-log-in"></span> Received remote management message about ' + humanReadableProperties[logData.cmd] + ' from node ' + logData.srcAddr;
-                trClass = 'info';
-                break;
-            case 'button-pressed':
-                if (logData.isPressed) {
-                    event = '<span class="glyphicon glyphicon-import"></span> Pressed button on the beacon connected to the box';
-                    trClass = 'default';
-                } else {
-                    event = '<span class="glyphicon glyphicon-export"></span> Released button on the beacon connected to the box';
-                    trClass = 'default';
-                }
-                break;
-            case 'connection':
-                if (logData.connected) {
-                    event = '<span class="glyphicon glyphicon-link"></span> A device connected to the beacon connected to the box';
-                    trClass ='success';
-                } else {
-                    event = '<span class="glyphicon glyphicon-ban-circle"></span> A device disconnected from the beacon connected to the box';
-                    trClass= 'warning';
-                }
-                break;
-            default:
-                break;
-        }
-
-        var row = $('<tr/>').addClass(trClass).append($('<td>').text(time).addClass('time')).append($('<td>').html(event).addClass('event')).append($('<td>').text(data).addClass('data'));
-
-        logsContainer.prepend(row);
-    };
 
     /* Generic messaging */
     var genericSwitchAddressFormatBtn = $('#mesh-send-generic-change-address-format');
@@ -150,6 +77,56 @@ $(function() {
                 prependToLog(data);
             }
         });
+    });
+
+    /* Remote management messaging shortcuts */
+    var managementShortcutGreenLed = $('#shortuct-led-green button');
+    var managementShortuctAdvertisements = $('#shortuct-advertising button');
+    var managementShortuctBatteryLevel = $('button#shortcut-battery');
+    var managementShortuctAddressInput = $('#mesh-send-shortcut-address');
+    var managementShortcutAddressFormat = 'hex';
+
+    //Handle green led state toggling
+    managementShortcutGreenLed.on('click', function(event){
+        //split id 'shortuct-led-green-on' by '-' and get 'on' or 'off' 
+        var setOn = $(this).attr('id').split('-').pop() == 'on';
+
+        var rawDstAddr = managementShortuctAddressInput.val();
+        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var cmdMode = 'set';
+        var cmd = 'led_state';
+        var value = setOn ? 0x02 : 0x00;
+        var url = $('#mesh-send-management-form').attr('action');
+
+        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
+    }); 
+
+    //Handle advertisements state toggle
+    managementShortuctAdvertisements.on('click', function(event){
+
+        //split id 'shortcut-advertising-on' by '-' and get 'on' or 'off' 
+        var setOn = $(this).attr('id').split('-').pop() == 'on';
+
+        var rawDstAddr = managementShortuctAddressInput.val();
+        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var cmdMode = 'set';
+        var cmd = 'advertising_state';
+        var value = setOn ? 0x01 : 0x00;
+        var url = $('#mesh-send-management-form').attr('action');
+
+        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
+    });
+
+    //Handle getting battery level
+    managementShortuctBatteryLevel.on('click', function(event){
+        var rawDstAddr = managementShortuctAddressInput.val();
+        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var cmdMode = 'get';
+        var cmd = 'battery_level';
+        var value = null;
+        var url = $('#mesh-send-management-form').attr('action');
+
+        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
     });
 
     /* Remote management messaging */
@@ -256,24 +233,9 @@ $(function() {
         var cmdMode = managementCommandInput.val();
         var cmd = managementPropertySelect.val();
         var value = managementValueInput.val();
-
-        var formData = {
-            dstAddr:  dstAddr,
-            cmdMode: cmdMode,
-            cmd: cmd,
-            value: value
-        };
         var url = managementMessagingForm.attr('action');
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            dataType: 'json',
-            success: function(data) {
-                data.eventType = 'mesh-remote-management-send';
-                prependToLog(data);
-            }
-        });
+
+        sendMeshRemoteManagement( dstAddr, cmdMode, cmd, value );
     });
 
     var clearLogsBtn = $('#mesh-logs-clear');
@@ -322,4 +284,105 @@ var humanReadableProperties = {
     'minor': 'Minor',
     'led_state': 'LED state',
     'rtc_time': 'RTC time'
+};
+
+
+/**
+ * 
+ */
+function sendMeshRemoteManagement( url , dstAddr, cmdMode, cmd, value )
+{
+    var formData = {
+        dstAddr:  dstAddr,
+        cmdMode: cmdMode,
+        cmd: cmd,
+        value: value
+    };
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: formData,
+        dataType: 'json',
+        success: function(data) {
+            data.eventType = 'mesh-remote-management-send';
+            prependToLog(data);
+        }
+    });   
+}
+
+/**
+ * 
+ */
+var prependToLog = function(logData) {
+    var logsContainer = $('#mesh-logs-container');
+
+    var time = moment(new Date(logData.timestamp)).format('YYYY-MM-DD HH:mm:ss');
+    var event = 'Event type unknown';
+    var data = JSON.stringify(logData);
+    var trClass = '';
+
+    switch (logData.eventType) {
+        case 'mesh-send':
+            event = '<span class="glyphicon glyphicon-send"></span> Sent "' + logData.msg + '" to node ' + logData.dstAddr;
+            trClass = 'info';
+            break;
+        case 'mesh-ack':
+            if (logData.status == 1) {
+                event = '<span class="glyphicon glyphicon-ok-circle"></span> Received ACK-SUCCESS from node ' + logData.dstAddr;
+                trClass = 'success';
+            } else {
+                event = '<span class="glyphicon glyphicon-remove-circle"></span> Received ACK-FAILED from node ' + logData.dstAddr;
+                trClass = 'warning';
+            }
+            break;
+        case 'mesh-receive':
+            if (logData.msg) {
+                 event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
+            }
+            else {
+                 event = '<span class="glyphicon glyphicon-log-in"></span> Received response from node ' + logData.dstAddr;
+            }
+            trClass = 'info';
+            break;
+        case 'mesh-remote-management-send':
+            if (logData.cmdMode == 'get') {
+                event = '<span class="glyphicon glyphicon-send"></span> Sent GET ' + humanReadableProperties[logData.cmd] + ' to node ' + logData.dstAddr;
+            } else {
+                event = '<span class="glyphicon glyphicon-send"></span> Sent SET ' + humanReadableProperties[logData.cmd] + ' to ' + logData.value + ' to node ' + logData.dstAddr;
+            }
+            trClass = 'info';
+            break;
+        case 'mesh-remote-management-response':
+            event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] + ' = ' + logData.value + ' from node ' + logData.srcAddr;
+            trClass = 'success';
+            break;
+        case 'mesh-remote-management-receive':
+            event = '<span class="glyphicon glyphicon-log-in"></span> Received remote management message about ' + humanReadableProperties[logData.cmd] + ' from node ' + logData.srcAddr;
+            trClass = 'info';
+            break;
+        case 'button-pressed':
+            if (logData.isPressed) {
+                event = '<span class="glyphicon glyphicon-import"></span> Pressed button on the beacon connected to the box';
+                trClass = 'default';
+            } else {
+                event = '<span class="glyphicon glyphicon-export"></span> Released button on the beacon connected to the box';
+                trClass = 'default';
+            }
+            break;
+        case 'connection':
+            if (logData.connected) {
+                event = '<span class="glyphicon glyphicon-link"></span> A device connected to the beacon connected to the box';
+                trClass ='success';
+            } else {
+                event = '<span class="glyphicon glyphicon-ban-circle"></span> A device disconnected from the beacon connected to the box';
+                trClass= 'warning';
+            }
+            break;
+        default:
+            break;
+    }
+
+    var row = $('<tr/>').addClass(trClass).append($('<td>').text(time).addClass('time')).append($('<td>').html(event).addClass('event')).append($('<td>').text(data).addClass('data'));
+
+    logsContainer.prepend(row);
 };

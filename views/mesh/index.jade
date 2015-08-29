@@ -98,17 +98,17 @@ block content
                                 input.form-control.input-lg#mesh-send-shortcut-address(type='text', placeholder='Destination address', name='address')
                     .col-md-3
                         label Green LED
-                        .btn-group(role='group')
-                            button#shortcut-led-on.btn.btn-default.btn-lg(type='button')
+                        .btn-group#shortuct-led-green(role='group')
+                            button#shortcut-led-green-on.btn.btn-default.btn-lg(type='button')
                                 | On &nbsp;
                                 span.glyphicon.glyphicon-certificate.white
-                            button#shortcut-led-off.btn.btn-default.btn-lg(type='button')
+                            button#shortcut-led-green-off.btn.btn-default.btn-lg(type='button')
                                 | Off &nbsp;
                                 span.glyphicon.glyphicon-certificate.black
 
                     .col-md-3
                         label Advertise
-                        .btn-group(role='group')
+                        .btn-group#shortuct-advertising(role='group')
                             button#shortcut-advertising-on.btn.btn-default.btn-lg(type='button')
                                 | On &nbsp;
                                 span.glyphicon.glyphicon-bullhorn.white
