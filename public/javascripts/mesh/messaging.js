@@ -83,9 +83,9 @@ $(function() {
 
     /* Remote management messaging shortcuts */
     var managementShortcutGreenLed = $('#shortuct-led-green button');
-    var managementShortuctAdvertisements = $('#shortuct-advertising button');
-    var managementShortuctBatteryLevel = $('button#shortcut-battery');
-    var managementShortuctAddressInput = $('#mesh-send-shortcut-address');
+    var managementShortcutAdvertisements = $('#shortuct-advertising button');
+    var managementShortcutBatteryLevel = $('button#shortcut-battery');
+    var managementShortcutAddressInput = $('#mesh-send-shortcut-address');
     var managementShortcutAddressFormat = 'hex';
 
     //Handle green led state toggling
@@ -93,7 +93,7 @@ $(function() {
         //split id 'shortuct-led-green-on' by '-' and get 'on' or 'off' 
         var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-        var rawDstAddr = managementShortuctAddressInput.val();
+        var rawDstAddr = managementShortcutAddressInput.val();
         var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
         var cmdMode = 'set';
         var cmd = 'led_state';
@@ -104,12 +104,12 @@ $(function() {
     }); 
 
     //Handle advertisements state toggle
-    managementShortuctAdvertisements.on('click', function(event){
+    managementShortcutAdvertisements.on('click', function(event){
 
         //split id 'shortcut-advertising-on' by '-' and get 'on' or 'off' 
         var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-        var rawDstAddr = managementShortuctAddressInput.val();
+        var rawDstAddr = managementShortcutAddressInput.val();
         var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
         var cmdMode = 'set';
         var cmd = 'advertising_state';
@@ -120,8 +120,8 @@ $(function() {
     });
 
     //Handle getting battery level
-    managementShortuctBatteryLevel.on('click', function(event){
-        var rawDstAddr = managementShortuctAddressInput.val();
+    managementShortcutBatteryLevel.on('click', function(event){
+        var rawDstAddr = managementShortcutAddressInput.val();
         var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
         var cmdMode = 'get';
         var cmd = 'battery_level';
@@ -237,7 +237,7 @@ $(function() {
         var value = managementValueInput.val();
         var url = managementMessagingForm.attr('action');
 
-        sendMeshRemoteManagement( dstAddr, cmdMode, cmd, value );
+        sendMeshRemoteManagement(url, dstAddr, cmdMode, cmd, value );
     });
 
     var clearLogsBtn = $('#mesh-logs-clear');
@@ -292,8 +292,7 @@ var humanReadableProperties = {
 /**
  * 
  */
-function sendMeshRemoteManagement( url , dstAddr, cmdMode, cmd, value )
-{
+function sendMeshRemoteManagement(url ,dstAddr, cmdMode, cmd, value) {
     var formData = {
         dstAddr:  dstAddr,
         cmdMode: cmdMode,

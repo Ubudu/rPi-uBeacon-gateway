@@ -2,7 +2,9 @@
 
 var express = require('express');
 var os = require('os');
-var router = express.Router();
+var router = new express.Router();
+
+var MISCONFIGURATION_MSG = 'Network interface not found. The RaspberryPi is probably misconfigured'; // eslint-disable-line
 
 /* Set the correct header section */
 router.use(function(req, res, next) {
@@ -12,17 +14,16 @@ router.use(function(req, res, next) {
 
 /* GET /network-infos page */
 router.get('/', function(req, res, next) {
-    var networkInterfaces = os.networkInterfaces();
-    console.log(networkInterfaces);
+    var interfaces = os.networkInterfaces();
 
     // Select the relevant network interface
-    var networkInterfaceName = process.env.NETWORK_INTERFACE_NAME;
+    var interfaceName = process.env.NETWORK_INTERFACE_NAME;
 
-    if (networkInterfaces.hasOwnProperty(networkInterfaceName)) {
-        var networkInterfaceTypes = networkInterfaces[networkInterfaceName];
-        return res.render('network/index', { networkInterfaceTypes: networkInterfaceTypes });
+    if (interfaces.hasOwnProperty(interfaceName)) {
+        var interfaceTypes = interfaces[interfaceName];
+        return res.render('network/index', { interfaceTypes: interfaceTypes });
     } else {
-        var err = new Error('Network interface not found. The RaspberryPi is probably misconfigured');
+        var err = new Error(MISCONFIGURATION_MSG);
         err.status = 500;
         return next(err);
     }

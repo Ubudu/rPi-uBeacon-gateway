@@ -5,7 +5,7 @@ var form = require('express-form');
 var field = form.field;
 var ubeacon = require('../ubeacon');
 var validator = require('../lib/validators');
-var router = express.Router();
+var router = new express.Router();
 
 /* Set the correct header section */
 router.use(function(req, res, next) {
@@ -13,24 +13,26 @@ router.use(function(req, res, next) {
     next();
 });
 
+/* eslint-disable */
 var validateForm = form(
     field('advertisingState').trim().required().toBooleanStrict(),
-    field('advertisingInterval').trim().required().toInt().custom(function(val){ return validator.isInRange(val,60,10000); }),
-    field('uuid').trim().required().custom(function(val){ return validator.isValidUUID.call(validator,val); }),
-    field('major').trim().required().toInt().custom(function(val){ return validator.isUint16.call(validator, val); }),
-    field('minor').trim().required().toInt().custom(function(val){ return validator.isUint16.call(validator, val); }),
-    field('measuredStrength').trim().required().toInt().custom(function(val){ return validator.isInRange(val,-255,0); }),
+    field('advertisingInterval').trim().required().toInt().custom(function(val) { return validator.isInRange(val, 60, 10000); }),
+    field('uuid').trim().required().custom(function(val) { return validator.isValidUUID.call(validator, val); }),
+    field('major').trim().required().toInt().custom(function(val) { return validator.isUint16.call(validator, val); }),
+    field('minor').trim().required().toInt().custom(function(val) { return validator.isUint16.call(validator, val); }),
+    field('measuredStrength').trim().required().toInt().custom(function(val) { return validator.isInRange(val, -255, 0); }),
 
     field('meshSettings.enabled').trim().required().toBooleanStrict(),
     field('meshSettings.allow_non_auth_connections').trim().required().toBooleanStrict(),
     field('meshSettings.always_connectable').trim().required().toBooleanStrict(),
     field('meshSettings.enable_mesh_window').trim().required().toBooleanStrict(),
-    field('meshSettings.mesh_window_on_hour').trim().required().toInt().custom(function(val){ return validator.isInRange.call(validator,val,0,23); }),
-    field('meshSettings.mesh_window_duration').trim().required().toInt().custom(function(val){ return validator.isValidMutipleOfTen.call(validator,val,0,60); }),
+    field('meshSettings.mesh_window_on_hour').trim().required().toInt().custom(function(val) { return validator.isInRange.call(validator, val, 0, 23); }),
+    field('meshSettings.mesh_window_duration').trim().required().toInt().custom(function(val) { return validator.isValidMutipleOfTen.call(validator, val, 0, 60); }),
 
     field('meshNetworkUUID').trim().required().custom(validator.isValidUUID),
-    field('meshDeviceId').trim().required().toInt().custom(function(val){ return validator.isInRange.call(validator,val,0x0001,0x8000); })
+    field('meshDeviceId').trim().required().toInt().custom(function(val) { return validator.isInRange.call(validator, val, 0x0001, 0x8000); })
 );
+/* eslint-enable */
 
 // Check that the beacon is connected
 router.use(function(req, res, next) {
@@ -60,7 +62,10 @@ router.post('/', validateForm, function(req, res) {
             if (err != null) {
                 return next(err);
             }
-            return res.render('beacon/index', { beaconData: beaconData, formErrors: req.form.getErrors() });
+            return res.render('beacon/index', {
+                beaconData: beaconData,
+                formErrors: req.form.getErrors()
+            });
         });
     } else {
         console.log(req.form);

@@ -4,7 +4,7 @@ var express = require('express');
 var os = require('os');
 var moment = require('moment');
 require('moment-duration-format');
-var router = express.Router();
+var router = new express.Router();
 
 /* Set the correct header section */
 router.use(function(req, res, next) {

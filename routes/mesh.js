@@ -2,8 +2,29 @@
 
 var express = require('express');
 var ubeacon = require('../ubeacon');
-var observer = require('node-observer');
-var router = express.Router();
+var router = new express.Router();
+
+var hexStringToString = function(hexStr)  {
+    var str = '';
+    for (var i = 0 ; i < hexStr.length ; i += 2) {
+        var c = String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
+        str += c;
+    }
+    return str;
+};
+
+var cmdBytes = {
+    'mac_address': ubeacon.uartCmd.bdaddr,
+    'serial_number': ubeacon.uartCmd.serialNumber,
+    'battery_level': ubeacon.uartCmd.batteryLevel,
+    'tx_power': ubeacon.uartCmd.txPower,
+    'advertising_state': ubeacon.uartCmd.advertising,
+    'proximity_uuid': ubeacon.uartCmd.uuid,
+    'major': ubeacon.uartCmd.major,
+    'minor': ubeacon.uartCmd.minor,
+    'led_state': ubeacon.uartCmd.led,
+    'rtc_time': ubeacon.uartCmd.RTCTime
+};
 
 /* Set correct header section */
 router.use(function(req, res, next) {
@@ -30,7 +51,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.post('/generic-messages', function(req, res, next) {
+router.post('/generic-messages', function(req, res) {
     var data = req.body;
     data.dstAddr = parseInt(data.dstAddr, 16);
     ubeacon.sendMeshGenericMessage(data.dstAddr, data.msg);
@@ -39,17 +60,17 @@ router.post('/generic-messages', function(req, res, next) {
     return res.json(data);
 });
 
-router.post('/remote-management-messages', function(req, res, next) {
+router.post('/remote-management-messages', function(req, res) {
     var data = req.body;
 
     var dataBytes = hexStringToString(data.value);
     var cmdByte = cmdBytes.hasOwnProperty(data.cmd) ? cmdBytes[data.cmd] : 0xFF;
 
-    var isGet = (data.cmdMode == 'get');
+    var isGet = (data.cmdMode === 'get');
 
-    var cmdBuffer = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false);
+    var cmdBuffer = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false); // eslint-disable-line
 
-    ubeacon.sendMeshRemoteManagementMessage(parseInt(data.dstAddr, 16), cmdBuffer.toString(), function() {
+    ubeacon.sendMeshRemoteManagementMessage(parseInt(data.dstAddr, 16), cmdBuffer.toString(), function() { // eslint-disable-line
         console.log(arguments);
     });
 
@@ -61,26 +82,3 @@ router.post('/remote-management-messages', function(req, res, next) {
 });
 
 module.exports = { path: '/mesh-network', router: router };
-
-var cmdBytes = {
-    'mac_address': ubeacon.uartCmd.bdaddr,
-    'serial_number': ubeacon.uartCmd.serialNumber,
-    'battery_level': ubeacon.uartCmd.batteryLevel,
-    'tx_power': ubeacon.uartCmd.txPower,
-    'advertising_state': ubeacon.uartCmd.advertising,
-    'proximity_uuid': ubeacon.uartCmd.uuid,
-    'major': ubeacon.uartCmd.major,
-    'minor': ubeacon.uartCmd.minor,
-    'led_state': ubeacon.uartCmd.led,
-    'rtc_time': ubeacon.uartCmd.RTCTime
-};
-
-var hexStringToString = function(hexStr)
-{
-    var str = '';
-    for (var i = 0 ; i < hexStr.length ; i += 2) {
-        var c = String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
-        str += c;
-    }
-    return str;
-};

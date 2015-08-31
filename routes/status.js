@@ -1,10 +1,10 @@
 'use strict';
 
 var express= require('express');
-var router = express.Router();
+var router = new express.Router();
 var ubeacon = require('../ubeacon');
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
     var data = {
         ubeacon: {}
     };

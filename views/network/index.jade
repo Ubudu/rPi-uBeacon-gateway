@@ -3,13 +3,13 @@ extends ../layout
 block content
     h1 Network informations
 
-    each networkInterface in networkInterfaceTypes
+    each interfaceType in interfaceTypes
         dl.dl-horizontal.dl-large
             dt.col-sm-4 Type
-            dd.col-sm-8= networkInterface.family
+            dd.col-sm-8= interfaceType.family
             dt.col-sm-4 Address
-            dd.col-sm-8= networkInterface.address
+            dd.col-sm-8= interfaceType.address
             dt.col-sm-4 Netmask
-            dd.col-sm-8= networkInterface.netmask
+            dd.col-sm-8= interfaceType.netmask
             dt.col-sm-4 MAC Address
-            dd.col-sm-8= networkInterface.mac
+            dd.col-sm-8= interfaceType.mac

@@ -1,4 +1,4 @@
-var should = require('should');
+require('should');
 
 describe('Application', function() {
     it('should pass', function() {
