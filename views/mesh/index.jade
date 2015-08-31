@@ -35,12 +35,12 @@ block content
                             h3.panel-title Send generic message
                         .panel-body
                             .row
-                                .col-md-8
+                                .col-lg-8.col-md-12
                                     .form-group
                                         input#mesh-generic-message.form-control(type='text', name='message', placeholder='hello world')
-                                .col-md-4
+                                .col-lg-4.col-md-12
                                     .form-group
-                                        button#mesh-generic-send.btn.btn-primary
+                                        button#mesh-generic-send.btn.btn-primary.btn-block
                                             | Send &nbsp;
                                             span.glyphicon.glyphicon-send
 
@@ -119,10 +119,10 @@ block content
                                                     option(value='led_state') LED state (0x68)
                                                     option(value='rtc_time') RTC Time (0x77)
                                     .row
-                                        .col-md-8
+                                        .col-lg-8.col-md-12
                                             .form-group
                                                 input.form-control#mesh-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
-                                        .col-md-4
+                                        .col-lg-4.col-md-12
                                             .form-group
                                                 button#mesh-management-send.btn.btn-primary.btn-block(type='submit')
                                                     | Send &nbsp;
@@ -135,8 +135,7 @@ block content
                                 a#mesh-logs-clear.pull-right(href='#')
                                     | clear
                                     span.glyphicon.glyphicon-trash
-                        .panel-body
-                            #mesh-logs-container
+                        #mesh-logs-container.panel-body
 
 block append javascripts
     script(src='/javascripts/mesh/messaging.js')
