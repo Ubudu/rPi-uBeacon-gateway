@@ -24,8 +24,9 @@ router.get('/', function(req, res) {
     // Select the relevant network interface
     var interfaceName = process.env.NETWORK_INTERFACE_NAME;
 
+    var interfaceTypes;
     if (interfaces.hasOwnProperty(interfaceName)) {
-        var interfaceTypes = interfaces[interfaceName];
+        interfaceTypes = interfaces[interfaceName];
     } else {
         var err = new Error(MISCONFIGURATION_MSG);
         err.status = 500;
