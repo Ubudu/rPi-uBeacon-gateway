@@ -290,4 +290,6 @@ var prependToLog = function(logData) {
         .append(alertBody);
 
     logsContainer.prepend(alert);
+
+    prettyPrint();
 };
