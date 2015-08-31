@@ -1,16 +1,31 @@
 extends ../layout
 
 block content
-    h1 System informations
+    h1 Informations
 
-    dl.dl-horizontal.dl-large
-        dt Hostname
-        dd= hostname
-        dt Platform
-        dd= platform
-        dt Uptime
-        dd= uptime
-        dt Loadavg
-        dd= loadavg
-        dt Memory (free / total)
-        dd= freemem + ' / ' + totalmem
+    ul.nav.nav-tabs(role='tablist')
+        li.active(role='presentation')
+            a(href='#system', aria-controls='system', role='tab', data-toggle='tab') System
+        li(role='presentation')
+            a(href='#network', aria-controls='network', role='tab', data-toggle='tab') Network
+    .tab-content
+        #system.tab-pane.active(role='tabpanel')
+            dl.dl-horizontal.dl-large
+                +infoField('Hostname', hostname)
+                +infoField('Platform', platform)
+                +infoField('Uptime', uptime)
+                +infoField('Loadavg', loadavg)
+                +infoField('Memory (free / total)', freemem + ' / ' + totalmem)
+        #network.tab-pane(role='tabpanel')
+            #network-accordion-group.panel-group(role='tablist', aria-multiselectable=true)
+                each interfaceType, index in interfaceTypes
+                    .panel.panel-default
+                        .panel-heading(role='tab')
+                            h4.panel-title
+                                a(role='button', data-toggle='collapse', data-parent='#network-accordion-group', href='#network-interface-'+index, aria-expanded=true, aria-controls='network-interface-'+index)
+                                    = interfaceType.family + ': ' + interfaceType.address
+                        .panel-collapse.collapse(id='network-interface-'+index, role='tabpanel')
+                            .panel-body
+                                dl.dl-horizontal.dl-large
+                                    +infoField('Netmask', interfaceType.netmask)
+                                    +infoField('MAC address', interfaceType.mac)

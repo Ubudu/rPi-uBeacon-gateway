@@ -3,9 +3,9 @@ extends ../layout
 block content
     h1 Beacon configuration
 
-    p.muted RTC Time: #{beaconData.rtcTime}
+    p.text-muted RTC Time on the beacon: #{beaconData.rtcTime}
 
-    p.muted Serial Port : #{beaconData.serialPort}
+    p.text-muted Serial Port : #{beaconData.serialPort}
 
     form(method='post', class='form-horizontal')
         ul.nav.nav-tabs(role='tablist')
