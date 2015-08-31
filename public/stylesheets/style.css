@@ -110,11 +110,42 @@ p.copyright {
     }
 }
 
+/* Mesh infos */
+#console .row > .col-md-4 dl.dl-horizontal > dt {
+    width: 280px;
+}
+#console .row > .col-md-4 dl.dl-horizontal > dd {
+    margin-left: 300px;
+}
+
+/* Mesh forms */
+#shortcuts .row > .col-md-5 label {
+    padding: 10px 0px;
+}
+
 /* Logs table */
 #mesh-logs-container td.data {
     word-wrap: break-word;
 }
 
 #mesh-logs-clear {
-    font-size: 24px;
+    font-size: 16px;
+    color: #3498db;
+}
+
+#mesh-logs-container .alert {
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+#mesh-logs-container .alert > a {
+    color: white;
+}
+
+#mesh-logs-container .alert > a > .time {
+    margin-right: 10px;
+}
+
+#mesh-logs-container .alert > .alert-body {
+    margin-top: 10px;
 }

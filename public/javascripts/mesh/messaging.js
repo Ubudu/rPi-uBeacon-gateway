@@ -4,245 +4,119 @@ var logsContainer = $('#mesh-logs-container');
 
 $(function() {
 
-    /* Generic messaging */
-    var genericSwitchAddressFormatBtn = $('#mesh-send-generic-change-address-format');
-    var genericAddressInput = $('#mesh-send-generic-address');
-    var genericAddressHex = $('#mesh-send-generic-address-hex');
-    var genericAddressNumeric = $('#mesh-send-generic-address-numeric');
-    var genericAddressFormat = 'hex';
-    genericAddressHex.on('click', function(event) {
+    var targetNodeInput = $('#mesh-target-node');
+
+    var getDstAddrAsHex = function() {
+        return Number(targetNodeInput.val()).toString(16);
+    };
+
+    // Generic messaging
+    var genericMessageInput = $('#mesh-generic-message');
+    var genericMessageSendBtn = $('#mesh-generic-send');
+    genericMessageSendBtn.on('click', function(event) {
         event.preventDefault();
 
-        // Unset the 'Numeric' link
-        genericAddressNumeric.parent().removeClass('active');
-        genericAddressNumeric.find('span.glyphicon').removeClass('glyphicon-ok');
+        var dstAddr = getDstAddrAsHex();
+        var msg = genericMessageInput.val();
 
-        // Set the 'Hex' link
-        genericAddressHex.parent().addClass('active');
-        genericAddressHex.find('span.glyphicon').addClass('glyphicon-ok');
-        genericSwitchAddressFormatBtn.html('0x &nbsp;<span class="caret"></span>');
-
-        // Convert field to hex if necessary
-        if (genericAddressFormat !== 'hex') {
-            var oldValue = genericAddressInput.val();
-            if (oldValue) {
-                var value = Number(oldValue).toString(16);
-                genericAddressInput.val(value);
-            }
-            genericAddressFormat = 'hex';
-        }
+        sendGenericMessage(dstAddr, msg);
     });
-    genericAddressNumeric.on('click', function(event) {
+
+    // Remote management shortcuts UI
+    var managementShortcutGreenLedBtns = $('#shortcut-led-green button');
+    var managementShortcutAdvertisementBtns = $('#shortcut-advertising button');
+    var managementShortcutBatteryLevelBtn = $('button#shortcut-battery');
+
+    // Handle green led state toggling
+    managementShortcutGreenLedBtns.on('click', function(event) {
         event.preventDefault();
 
-        // Unset the 'Hex' link
-        genericAddressHex.parent().removeClass('active');
-        genericAddressHex.find('span.glyphicon').removeClass('glyphicon-ok');
-
-        // Set the 'Numeric' link
-        genericAddressNumeric.parent().addClass('active');
-        genericAddressNumeric.find('span.glyphicon').addClass('glyphicon-ok');
-        genericSwitchAddressFormatBtn.html('Int &nbsp;<span class="caret"></span>');
-
-        // Convert field to numeric if necessary
-        if (genericAddressFormat !== 'numeric') {
-            var oldValue = genericAddressInput.val();
-            if (oldValue) {
-                var value = parseInt(oldValue, 16);
-                genericAddressInput.val(value);
-            }
-            genericAddressFormat = 'numeric';
-        }
-    });
-
-    var genericMessagingForm = $('#mesh-send-generic-form');
-    var genericMsgInput = $('#mesh-send-generic-message');
-    genericMessagingForm.on('submit', function(event) {
-        event.preventDefault();
-
-        var rawDstAddr = genericAddressInput.val();
-        var dstAddr = genericAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
-        var msg = genericMsgInput.val();
-
-        var formData = {
-            dstAddr: dstAddr,
-            msg: msg
-        };
-        var url = genericMessagingForm.attr('action');
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            dataType: 'json',
-            success: function(data) {
-                data.eventType = 'mesh-send';
-                prependToLog(data);
-            }
-        });
-    });
-
-    /* Remote management messaging shortcuts */
-    var managementShortcutGreenLed = $('#shortuct-led-green button');
-    var managementShortcutAdvertisements = $('#shortuct-advertising button');
-    var managementShortcutBatteryLevel = $('button#shortcut-battery');
-    var managementShortcutAddressInput = $('#mesh-send-shortcut-address');
-    var managementShortcutAddressFormat = 'hex';
-
-    //Handle green led state toggling
-    managementShortcutGreenLed.on('click', function(event){
-        //split id 'shortuct-led-green-on' by '-' and get 'on' or 'off' 
+        // split id 'shortuct-led-green-on' by '-' and get 'on' or 'off'
         var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-        var rawDstAddr = managementShortcutAddressInput.val();
-        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var dstAddr = getDstAddrAsHex();
         var cmdMode = 'set';
         var cmd = 'led_state';
         var value = setOn ? 0x02 : 0x00;
-        var url = $('#mesh-send-management-form').attr('action');
 
-        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
-    }); 
+        sendMeshRemoteManagement(dstAddr, cmdMode, cmd, value);
+    });
 
-    //Handle advertisements state toggle
-    managementShortcutAdvertisements.on('click', function(event){
+    // Handle advertisements state toggle
+    managementShortcutAdvertisementBtns.on('click', function(event) {
+        event.preventDefault();
 
-        //split id 'shortcut-advertising-on' by '-' and get 'on' or 'off' 
+        // split id 'shortcut-advertising-on' by '-' and get 'on' or 'off'
         var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-        var rawDstAddr = managementShortcutAddressInput.val();
-        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var dstAddr = getDstAddrAsHex();
         var cmdMode = 'set';
         var cmd = 'advertising_state';
         var value = setOn ? 0x01 : 0x00;
-        var url = $('#mesh-send-management-form').attr('action');
 
-        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
+        sendMeshRemoteManagement(dstAddr, cmdMode, cmd, value);
     });
 
-    //Handle getting battery level
-    managementShortcutBatteryLevel.on('click', function(event){
-        var rawDstAddr = managementShortcutAddressInput.val();
-        var dstAddr = managementShortcutAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+    // Handle getting battery level
+    managementShortcutBatteryLevelBtn.on('click', function(event) {
+        event.preventDefault();
+
+        var dstAddr = getDstAddrAsHex();
         var cmdMode = 'get';
         var cmd = 'battery_level';
         var value = null;
-        var url = $('#mesh-send-management-form').attr('action');
 
-        sendMeshRemoteManagement( url, dstAddr, cmdMode, cmd, value );
+        sendMeshRemoteManagement(dstAddr, cmdMode, cmd, value);
     });
 
-    /* Remote management messaging */
-    var managementSwitchCommandBtn = $('#mesh-send-management-change-command');
-    var managementCommandInput = $('#mesh-send-management-command');
-    var managementCommandGet = $('#mesh-send-management-command-get');
-    var managementCommandSet = $('#mesh-send-management-command-set');
-    var managementPropertySelect = $('#mesh-send-management-property');
-    managementCommandGet.on('click', function(event) {
+    /* Remote management advanced UI */
+    var managementCommandGroup = $('#mesh-command-group');
+    var managementCommandBtns = managementCommandGroup.find('ul.dropdown-menu > li > a');
+    var managementSwitchCommandBtn = managementCommandGroup.find('button.dropdown-toggle');
+    var managementCommandInput = $('#mesh-command');
+    var managementPropertySelect = $('#mesh-property');
+    var managementValueInput = $('#mesh-value');
+    var managementSendBtn = $('#mesh-management-send');
+
+    // Handle command toggle
+    managementCommandBtns.on('click', function(event) {
         event.preventDefault();
 
-        // Unset the 'SET' link
-        managementCommandSet.parent().removeClass('active');
-        managementCommandSet.find('span.glyphicon').removeClass('glyphicon-ok');
+        // split id 'mesh-command-get' by '-' and get 'get' or 'set';
+        var cmdMode = $(this).attr('id').split('-').pop();
 
-        // Set the 'GET' link
-        managementCommandGet.parent().addClass('active');
-        managementCommandGet.find('span.glyphicon').addClass('glyphicon-ok');
-        managementSwitchCommandBtn.html('GET &nbsp;<span class="caret"></span>');
+        managementCommandInput.val(cmdMode);
 
-        // Change the value of the hidden 'command' field
-        managementCommandInput.val('get');
+        if (cmdMode == 'get') {
+            // Change the label of the button
+            managementSwitchCommandBtn.html('GET &nbsp;<span class="caret"></span>');
 
-        // Enable all the properties
-        managementPropertySelect.find('option').removeAttr('disabled');
-    });
-    managementCommandSet.on('click', function(event) {
-        event.preventDefault();
+            // Enable all the properties
+            managementPropertySelect.find('option').removeAttr('disabled');
+        } else {
+            // Change the label of the button
+            managementSwitchCommandBtn.html('SET &nbsp;<span class="caret"></span>');
 
-        // Unset the 'GET' link
-        managementCommandGet.parent().removeClass('active');
-        managementCommandGet.find('span.glyphicon').removeClass('glyphicon-ok');
-
-        // Set the 'SET' link
-        managementCommandSet.parent().addClass('active');
-        managementCommandSet.find('span.glyphicon').addClass('glyphicon-ok');
-        managementSwitchCommandBtn.html('SET &nbsp;<span class="caret"></span>');
-
-        // Change the value of the hidden 'command' field
-        managementCommandInput.val('set');
-
-        // Disable all the properties that can't be set
-        managementPropertySelect.find('option[data-lock=1]').attr('disabled', true).removeAttr('selected');
-    });
-
-    var managementSwitchAddressFormatBtn = $('#mesh-send-management-change-address-format');
-    var managementAddressInput = $('#mesh-send-management-address');
-    var managementAddressHex = $('#mesh-send-management-address-hex');
-    var managementAddressNumeric = $('#mesh-send-management-address-numeric');
-    var managementAddressFormat = 'hex';
-    managementAddressHex.on('click', function(event) {
-        event.preventDefault();
-
-        // Unset the 'Numeric' link
-        managementAddressNumeric.parent().removeClass('active');
-        managementAddressNumeric.find('span.glyphicon').removeClass('glyphicon-ok');
-
-        // Set the 'Hex' link
-        managementAddressHex.parent().addClass('active');
-        managementAddressHex.find('span.glyphicon').addClass('glyphicon-ok');
-        managementSwitchAddressFormatBtn.html('0x &nbsp;<span class="caret"></span>');
-
-        // Convert field to hex if necessary
-        if (managementAddressFormat !== 'hex') {
-            var oldValue = managementAddressInput.val();
-            if (oldValue) {
-                var value = Number(oldValue).toString(16);
-                managementAddressInput.val(value);
-            }
-            managementAddressFormat = 'hex';
-        }
-    });
-    managementAddressNumeric.on('click', function(event) {
-        event.preventDefault();
-
-        // Unset the 'Hex' link
-        managementAddressHex.parent().removeClass('active');
-        managementAddressHex.find('span.glyphicon').removeClass('glyphicon-ok');
-
-        // Set the 'Numeric' link
-        managementAddressNumeric.parent().addClass('active');
-        managementAddressNumeric.find('span.glyphicon').addClass('glyphicon-ok');
-        managementSwitchAddressFormatBtn.html('Int &nbsp;<span class="caret"></span>');
-
-        // Convert field to numeric if necessary
-        if (managementAddressFormat !== 'numeric') {
-            var oldValue = managementAddressInput.val();
-            if (oldValue) {
-                var value = parseInt(oldValue, 16);
-                managementAddressInput.val(value);
-            }
-            managementAddressFormat = 'numeric';
+            // Disable non-modifiable properties
+            managementPropertySelect.find('option[data-lock=1]').attr('disabled', true).removeAttr('selected');
         }
     });
 
-    var managementMessagingForm = $('#mesh-send-management-form');
-    var managementValueInput = $('#mesh-send-management-value');
-
-    managementMessagingForm.on('submit', function(event) {
+    managementSendBtn.on('click', function(event) {
         event.preventDefault();
 
-        var rawDstAddr = managementAddressInput.val();
-        var dstAddr = managementAddressFormat == 'hex' ? rawDstAddr : Number(rawDstAddr).toString(16);
+        var dstAddr = getDstAddrAsHex();
         var cmdMode = managementCommandInput.val();
         var cmd = managementPropertySelect.val();
         var value = managementValueInput.val();
-        var url = managementMessagingForm.attr('action');
 
-        sendMeshRemoteManagement(url, dstAddr, cmdMode, cmd, value );
+        sendMeshRemoteManagement(dstAddr, cmdMode, cmd, value );
     });
 
     var clearLogsBtn = $('#mesh-logs-clear');
     clearLogsBtn.on('click', function(event) {
         event.preventDefault();
+
         logsContainer.empty();
     });
 
@@ -288,11 +162,10 @@ var humanReadableProperties = {
     'rtc_time': 'RTC time'
 };
 
-
 /**
  * 
  */
-function sendMeshRemoteManagement(url ,dstAddr, cmdMode, cmd, value) {
+function sendMeshRemoteManagement(dstAddr, cmdMode, cmd, value) {
     var formData = {
         dstAddr:  dstAddr,
         cmdMode: cmdMode,
@@ -301,7 +174,7 @@ function sendMeshRemoteManagement(url ,dstAddr, cmdMode, cmd, value) {
     };
     $.ajax({
         type: 'POST',
-        url: url,
+        url: '/mesh-network/remote-management-messages',
         data: formData,
         dataType: 'json',
         success: function(data) {
@@ -312,37 +185,59 @@ function sendMeshRemoteManagement(url ,dstAddr, cmdMode, cmd, value) {
 }
 
 /**
- * 
+ * Use the remote webservice to send a generic message to node {dstAddr}
+ *
+ * @param dstAddr   Id of the target node (in hex)
+ * @param msg       Message to send
+ */
+function sendGenericMessage(dstAddr, msg) {
+    var formData = {
+        dstAddr: dstAddr,
+        msg: msg
+    };
+    $.ajax({
+        type: 'POST',
+        url: '/mesh-network/generic-messages',
+        data: formData,
+        dataType: 'json',
+        success: function(data) {
+            data.eventType = 'mesh-send';
+            prependToLog(data);
+        }
+    });
+}
+
+/**
+ *
  */
 var prependToLog = function(logData) {
 
     var time = moment(new Date(logData.timestamp)).format('YYYY-MM-DD HH:mm:ss');
     var event = 'Event type unknown';
     var data = JSON.stringify(logData);
-    var trClass = '';
+
+    var alertClass = 'info';
 
     switch (logData.eventType) {
         case 'mesh-send':
             event = '<span class="glyphicon glyphicon-send"></span> Sent "' + logData.msg + '" to node ' + logData.dstAddr;
-            trClass = 'info';
             break;
         case 'mesh-ack':
             if (logData.status == 1) {
                 event = '<span class="glyphicon glyphicon-ok-circle"></span> Received ACK-SUCCESS from node ' + logData.dstAddr;
-                trClass = 'success';
+                alertClass = 'success';
             } else {
                 event = '<span class="glyphicon glyphicon-remove-circle"></span> Received ACK-FAILED from node ' + logData.dstAddr;
-                trClass = 'warning';
+                alertClass = 'warning';
             }
             break;
         case 'mesh-receive':
             if (logData.msg) {
-                 event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
+                event = '<span class="glyphicon glyphicon-log-in"></span> Received "' + logData.msg + '" from node ' + logData.dstAddr;
             }
             else {
-                 event = '<span class="glyphicon glyphicon-log-in"></span> Received response from node ' + logData.dstAddr;
+                event = '<span class="glyphicon glyphicon-log-in"></span> Received response from node ' + logData.dstAddr;
             }
-            trClass = 'info';
             break;
         case 'mesh-remote-management-send':
             if (logData.cmdMode == 'get') {
@@ -350,39 +245,51 @@ var prependToLog = function(logData) {
             } else {
                 event = '<span class="glyphicon glyphicon-send"></span> Sent SET ' + humanReadableProperties[logData.cmd] + ' to ' + logData.value + ' to node ' + logData.dstAddr;
             }
-            trClass = 'info';
             break;
         case 'mesh-remote-management-response':
             event = '<span class="glyphicon glyphicon-log-in"></span> Received ' + humanReadableProperties[logData.cmd] + ' = ' + logData.value + ' from node ' + logData.srcAddr;
-            trClass = 'success';
+            alertClass = 'success';
             break;
         case 'mesh-remote-management-receive':
             event = '<span class="glyphicon glyphicon-log-in"></span> Received remote management message about ' + humanReadableProperties[logData.cmd] + ' from node ' + logData.srcAddr;
-            trClass = 'info';
             break;
         case 'button-pressed':
             if (logData.isPressed) {
                 event = '<span class="glyphicon glyphicon-import"></span> Pressed button on the beacon connected to the box';
-                trClass = 'default';
             } else {
                 event = '<span class="glyphicon glyphicon-export"></span> Released button on the beacon connected to the box';
-                trClass = 'default';
             }
+            alertClass = 'default';
             break;
         case 'connection':
             if (logData.connected) {
                 event = '<span class="glyphicon glyphicon-link"></span> A device connected to the beacon connected to the box';
-                trClass ='success';
+                alertClass ='success';
             } else {
                 event = '<span class="glyphicon glyphicon-ban-circle"></span> A device disconnected from the beacon connected to the box';
-                trClass= 'warning';
+                alertClass = 'warning';
             }
             break;
         default:
+            event = '<span class="glyphicon glyphicon-question-sign"></span> Event unknown';
+            alertClass = 'default';
             break;
     }
 
-    var row = $('<tr/>').addClass(trClass).append($('<td>').text(time).addClass('time')).append($('<td>').html(event).addClass('event')).append($('<td>').text(data).addClass('data'));
+    var alertId = 'alert-' + Math.floor(10000 * Math.random());
 
-    logsContainer.prepend(row);
+    var alertTitle = $('<a role="button" data-toggle="collapse" href="#' + alertId + '" aria-expanded=false aria-controls="' + alertId + '">')
+        .append($('<strong>').text(time).addClass('time'))
+        .append($('<span>').html(event).addClass('event'));
+
+    var alertBody = $('<div class="alert-body collapse" id="' + alertId + '">')
+        .append($('<pre class="prettyprint lang-js">').text(JSON.stringify(logData, null, 4)));
+
+    var alert = $('<div class="alert alert-' + alertClass + '">')
+        .append(alertTitle)
+        .append(alertBody);
+
+    logsContainer.prepend(alert);
+
+    prettyPrint();
 };

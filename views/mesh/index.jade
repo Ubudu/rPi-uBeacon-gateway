@@ -2,200 +2,140 @@ extends ../layout
 
 block content
     h1 Mesh network
-    section
-        h2 Mesh infos
-        dl.dl-horizontal.dl-large
-            dt Mesh enabled ?
-            dd
-                - if (beaconData.meshSettings.enabled)
-                    | Yes
-                - else
-                    | No
-            dt Accept unauthenticated connections ?
-            dd
-                - if (beaconData.meshSettings.allow_non_auth_connections)
-                    | Yes
-                - else
-                    | No
-            dt Always connectable ?
-            dd
-                - if (beaconData.meshSettings.always_connectable)
-                    | Yes
-                - else
-                    | No
-            dt Mesh window enabled ?
-            dd
-                - if (beaconData.meshSettings.enable_mesh_window)
-                    | Yes (#{beaconData.meshSettings.mesh_window_duration} minutes starting from #{beaconData.meshSettings.mesh_window_on_hour}:00)
-                - else
-                    | No
-            dt Mesh network UUID
-            dd=uuid(beaconData.meshNetworkUUID)
-            dt Mesh device ID
-            dd=beaconData.meshDeviceId
 
-    section
-        h2 Send generic message
-        form#mesh-send-generic-form(action='/mesh-network/generic-messages')
+    ul.nav.nav-tabs(role='tablist')
+        li.active(role='presentation')
+            a(href='#console', aria-controls='console', role='tab', data-toggle='tab')
+                | Console &nbsp;
+                span.glyphicon.glyphicon-console
+        li(role='presentation')
+            a(href='#network', aria-controls='mesh', role='tab', data-toggle='tab')
+                | Network &nbsp;
+                span.glyphicon.glyphicon-fullscreen
+    .tab-content
+        #console.tab-pane.active(role='tabpanel')
             .row
                 .col-md-4
+                    .panel.panel-default
+                        .panel-heading
+                            h3.panel-title Mesh gateway infos
+                        .panel-body
+                            dl
+                                +infoField('Mesh enabled ?', beaconData.meshSettings.enabled ? 'Yes' : 'No')
+                                +infoField('Accept unauthenticated connections ?', beaconData.meshSettings.allow_non_auth_connections ? 'Yes' : 'No')
+                                +infoField('Always connectable ?', beaconData.meshSettings.always_connectable ? 'Yes' : 'No')
+                                +infoField('Window enabled ?', beaconData.meshSettings.enable_mesh_window ? 'Yes (' + beaconData.meshSettings.mesh_window_duration + ' minutes starting from ' + beaconData.meshSettings.mesh_window_on_hour + ':00)' : 'No')
+                                +infoField('Network UUID', uuid(beaconData.meshNetworkUUID))
+                                +infoField('Device ID', beaconData.meshDeviceId)
                     .form-group
-                        label.sr-only Destination
-                        .input-group
-                            .input-group-btn
-                                .btn-group
-                                    button.btn.btn-default.dropdown-toggle.btn-lg#mesh-send-generic-change-address-format(type='button', data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-                                        | 0x &nbsp;
-                                        span.caret
-                                    ul.dropdown-menu(aria-labbeledby='mesh-send-generic-address-change-format')
-                                        li.active
-                                            a#mesh-send-generic-address-hex(href='#')
-                                                | Hex &nbsp;
-                                                span.glyphicon.glyphicon-ok
-                                        li
-                                            a#mesh-send-generic-address-numeric(href='#')
-                                                | Numeric &nbsp;
-                                                span.glyphicon
-                            input.form-control.input-lg#mesh-send-generic-address(type='text', placeholder='Destination address', name='address')
-                .col-md-6
-                    .form-group
-                        label.sr-only Message
-                        input.form-control.input-lg#mesh-send-generic-message(placeholder='Message (limited to 16 bytes)', name='message')
-                .col-md-2
-                    .form-group
-                        button.btn.btn-primary.btn-lg.btn-block(type='submit')
-                            | Send
-                            | &nbsp;
-                            span.glyphicon.glyphicon-send
+                        input.form-control.input-lg#mesh-target-node(type='number', placeholder='Target node', name='target')
 
-    section
-        h2 Send remote management message
-        ul.nav.nav-tabs(role='tablist')
-            li.active(role='presentation')
-                a(href='#shortcuts', aria-controls='shortcuts', role='tab', data-toggle='tab') Shortcuts
-            li(role='presentation')
-                a(href='#advanced', aria-controls='advanced', role='tab', data-toggle='tab') Advanced
-        .tab-content
-            #shortcuts.tab-pane.active(role='tabpanel')
-                .row
-                    .col-md-4
-                        .form-group
-                            label &nbsp;
-                            .input-group
-                                .input-group-btn
-                                    button.btn.btn-default.dropdown-toggle.btn-lg#mesh-send-shortcut-change-address-format(type='button', data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-                                        | 0x &nbsp;
-                                        span.caret
-                                    ul.dropdown-menu(aria-labbeledby='mesh-send-shortcut-address-change-format')
-                                        li.active
-                                            a#mesh-send-shortcut-address-hex(href='#')
-                                                | Hex &nbsp;
-                                                span.glyphicon.glyphicon-ok
-                                        li
-                                            a#mesh-send-shortcut-address-numeric(href='#')
-                                                | Numeric &nbsp;
-                                                span.glyphicon
-                                input.form-control.input-lg#mesh-send-shortcut-address(type='text', placeholder='Destination address', name='address')
-                    .col-md-3
-                        label Green LED
-                        .btn-group#shortuct-led-green(role='group')
-                            button#shortcut-led-green-on.btn.btn-default.btn-lg(type='button')
-                                | On &nbsp;
-                                span.glyphicon.glyphicon-certificate.white
-                            button#shortcut-led-green-off.btn.btn-default.btn-lg(type='button')
-                                | Off &nbsp;
-                                span.glyphicon.glyphicon-certificate.black
+                    .panel.panel-default
+                        .panel-heading
+                            h3.panel-title Send generic message
+                        .panel-body
+                            .row
+                                .col-lg-8.col-md-12
+                                    .form-group
+                                        input#mesh-generic-message.form-control(type='text', name='message', placeholder='hello world')
+                                .col-lg-4.col-md-12
+                                    .form-group
+                                        button#mesh-generic-send.btn.btn-primary.btn-block
+                                            | Send &nbsp;
+                                            span.glyphicon.glyphicon-send
 
-                    .col-md-3
-                        label Advertise
-                        .btn-group#shortuct-advertising(role='group')
-                            button#shortcut-advertising-on.btn.btn-default.btn-lg(type='button')
-                                | On &nbsp;
-                                span.glyphicon.glyphicon-bullhorn.white
-                            button#shortcut-advertising-off.btn.btn-default.btn-lg(type='button')
-                                | Off &nbsp;
-                                span.glyphicon.glyphicon-bullhorn.black
-                    .col-md-2
-                        label Battery level
-                        button#shortcut-battery.btn.btn-default.btn-lg.btn-block(type='button')
-                            | Get &nbsp;
-                            span.glyphicon.glyphicon-tasks
-
-            #advanced.tab-pane(role='tabpanel')
-                form#mesh-send-management-form(action='/mesh-network/remote-management-messages')
-                    .row
-                        .col-md-4
-                            .form-group
-                                label.sr-only Destination
-                                .input-group
-                                    .input-group-btn
-                                        button.btn.btn-default.dropdown-toggle.btn-lg#mesh-send-management-change-address-format(type='button', data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-                                            | 0x &nbsp;
-                                            span.caret
-                                        ul.dropdown-menu(aria-labbeledby='mesh-send-management-address-change-format')
-                                            li.active
-                                                a#mesh-send-management-address-hex(href='#')
-                                                    | Hex &nbsp;
-                                                    span.glyphicon.glyphicon-ok
-                                            li
-                                                a#mesh-send-management-address-numeric(href='#')
-                                                    | Numeric &nbsp;
-                                                    span.glyphicon
-                                    input.form-control.input-lg#mesh-send-management-address(type='text', placeholder='Destination address', name='address')
-                        .col-md-2
-                            .form-group
-                                button.btn.btn-default.btn-block.dropdown-toggle.btn-lg#mesh-send-management-change-command(type='button', data-toggle='dropdown' aria-haspopus='true' aria-expanded='false')
-                                    | GET &nbsp;
-                                    span.caret
-                                ul.dropdown-menu(aria-labelledby='mesh-send-management-change-command')
-                                    li.active
-                                        a#mesh-send-management-command-get(href='#')
-                                            | GET &nbsp;
-                                            span.glyphicon.glyphicon-ok
-                                    li
-                                        a#mesh-send-management-command-set(href='#')
-                                            | SET &nbsp;
-                                            span.glyphicon
-                                input#mesh-send-management-command(type='hidden', name='command', value='get')
-                        .col-md-4
-                            .form-group
-                                label.sr-only Property
-                                select.form-control.input-lg#mesh-send-management-property(name='property')
-                                    option Please select a property...
-                                    option(value='mac_address', data-lock=1) MAC address (0x34)
-                                    option(value='serial_number', data-lock=1) Serial number (0x37)
-                                    option(value='battery_level', data-lock=1) Battery level (0x38)
-                                    option(value='tx_power') TX power (0x35)
-                                    option(value='advertising_state') Advertising state (0x74)
-                                    option(value='proximity_uuid') Proximity UUID (0x61)
-                                    option(value='major') Major (0x66)
-                                    option(value='minor') Minor (0x67)
-                                    option(value='led_state') LED state (0x68)
-                                    option(value='rtc_time') RTC Time (0x77)
-                    .row
-                        .col-md-10
-                            .form-group
-                                label.sr-only Value
-                                .input-group.input-group-lg
-                                    span.input-group-addon 0x
-                                    input.form-control#mesh-send-management-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
-                        .col-md-2
-                            .form-group
-                                button.btn.btn-primary.btn-lg.btn-block(type='submit')
-                                    | Send
-                                    | &nbsp;
-                                    span.glyphicon.glyphicon-send
-    section
-        h2
-            | Mesh logs &nbsp;
-            a.text-info#mesh-logs-clear(href='#') clear
-        table.table.table-striped.table-hover(style="table-layout: fixed")
-            thead
-                tr
-                    th(style="width: 20%") Timestamp
-                    th(style="width: 50%") Event
-                    th(style="width: 30%") Data
-            tbody#mesh-logs-container
+                    .panel.panel-default
+                        .panel-heading
+                            h3.panel-title Remote management
+                        .panel-body
+                            ul.nav.nav-tabs(role='tablist')
+                                li(role='presentation')
+                                    a(href='#shortcuts', aria-controls='shortcuts', role='tab', data-toggle='tab') Shortcuts
+                                li.active(role='presentation')
+                                    a(href='#advanced', aria-controls='advanced', role='tab', data-toggle='tab') Advanced
+                            .tab-content
+                                #shortcuts.tab-pane(role='tabpanel')
+                                    .form-group
+                                        .row
+                                            .col-md-5
+                                                label Green LED
+                                            .col-md-7
+                                                .btn-group.btn-group-justified#shortcut-led-green(role='group')
+                                                    .btn-group
+                                                        button#shortcut-led-green-on.btn.btn-default(type='button')
+                                                            | On &nbsp;
+                                                            span.glyphicon.glyphicon-certificate.white
+                                                    .btn-group
+                                                        button#shortcut-led-green-off.btn.btn-default(type='button')
+                                                            | Off &nbsp;
+                                                            span.glyphicon.glyphicon-certificate.black
+                                    .form-group
+                                        .row
+                                            .col-md-5
+                                                label Advertise
+                                            .col-md-7
+                                                .btn-group.btn-group-justified#shortcut-advertising(role='group')
+                                                    .btn-group
+                                                        button#shortcut-advertising-on.btn.btn-default(type='button')
+                                                            | On &nbsp;
+                                                            span.glyphicon.glyphicon-bullhorn.white
+                                                    .btn-group
+                                                        button#shortcut-advertising-off.btn.btn-default(type='button')
+                                                            | Off &nbsp;
+                                                            span.glyphicon.glyphicon-bullhorn.black
+                                    .form-group
+                                        .row
+                                            .col-md-5
+                                                label Battery level
+                                            .col-md-7
+                                                button#shortcut-battery.btn.btn-default.btn-block(type='button')
+                                                    | Get &nbsp;
+                                                    span.glyphicon.glyphicon-tasks
+                                #advanced.tab-pane.active(role='tabpanel')
+                                    .row
+                                        .col-md-4
+                                            .form-group#mesh-command-group
+                                                button.btn.btn-default.btn-block.dropdown-toggle(type='button', data-toggle='dropdown' aria-haspopups='true' aria-expanded='false')
+                                                    | GET &nbsp;
+                                                    span.caret
+                                                ul.dropdown-menu(aria-labelledby='mesh-send-management-change-command')
+                                                    li
+                                                        a#mesh-command-get(href='#') GET
+                                                    li
+                                                        a#mesh-command-set(href='#') SET
+                                                input#mesh-command(type='hidden', name='command', value='get')
+                                        .col-md-8
+                                            .form-group
+                                                select.form-control#mesh-property(name='property')
+                                                    option Please select a property...
+                                                    option(value='mac_address', data-lock=1) MAC address (0x34)
+                                                    option(value='serial_number', data-lock=1) Serial number (0x37)
+                                                    option(value='battery_level', data-lock=1) Battery level (0x38)
+                                                    option(value='tx_power') TX power (0x35)
+                                                    option(value='advertising_state') Advertising state (0x74)
+                                                    option(value='proximity_uuid') Proximity UUID (0x61)
+                                                    option(value='major') Major (0x66)
+                                                    option(value='minor') Minor (0x67)
+                                                    option(value='led_state') LED state (0x68)
+                                                    option(value='rtc_time') RTC Time (0x77)
+                                    .row
+                                        .col-lg-8.col-md-12
+                                            .form-group
+                                                input.form-control#mesh-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
+                                        .col-lg-4.col-md-12
+                                            .form-group
+                                                button#mesh-management-send.btn.btn-primary.btn-block(type='submit')
+                                                    | Send &nbsp;
+                                                    span.glyphicon.glyphicon-send
+                .col-md-8
+                    .panel.panel-default
+                        .panel-heading
+                            h2.panel-title
+                                | Mesh logs
+                                a#mesh-logs-clear.pull-right(href='#')
+                                    | clear
+                                    span.glyphicon.glyphicon-trash
+                        #mesh-logs-container.panel-body
 
 block append javascripts
     script(src='/javascripts/mesh/messaging.js')

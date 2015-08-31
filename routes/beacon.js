@@ -9,7 +9,7 @@ var router = new express.Router();
 
 /* Set the correct header section */
 router.use(function(req, res, next) {
-    res.locals.headerSection = 'beacon_configuration';
+    res.locals.headerSection = 'gateway_beacon';
     next();
 });
 
@@ -78,4 +78,4 @@ router.post('/', validateForm, function(req, res) {
     }
 });
 
-module.exports = { path: '/configure-my-beacon', router: router };
+module.exports = { path: '/gateway-beacon', router: router };
