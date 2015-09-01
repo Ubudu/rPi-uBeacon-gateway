@@ -24,29 +24,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to add default header section
 app.use(function (req, res, next) {
-    res.locals.headerSection = '';
-    next();
+  res.locals.headerSection = '';
+  next();
 });
 
 // Middleware to add some template helpers
 var helpers = require('./lib/template-helpers');
 app.use(function(req, res, next) {
-    _.assign(res.locals, helpers);
-    next();
+  _.assign(res.locals, helpers);
+  next();
 });
 
 // Load all the routes
 var routesPath = path.join(__dirname, 'routes');
 fs.readdirSync(routesPath).forEach(function(file) {
-    var routerOptions = require(path.join(__dirname, 'routes', file));
-    app.use(routerOptions.path, routerOptions.router);
+  var routerOptions = require(path.join(__dirname, 'routes', file));
+  app.use(routerOptions.path, routerOptions.router);
 });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 // error handlers
@@ -54,29 +54,29 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('common/error', {
-            message: err.message,
-            error: err
-        });
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('common/error', {
+      message: err.message,
+      error: err
     });
+  });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('common/error', {
-        message: err.message,
-        error: {}
-    });
+  res.status(err.status || 500);
+  res.render('common/error', {
+    message: err.message,
+    error: {}
+  });
 });
 
 // Enable LiveReload in development: whenever a static asset in /public (JS, CSS, HTML, ...) or a Jade view in /views changes, the web page is reloaded. (Works with the Chrome LiveReload plugin).
 if (app.get('env') === 'development' && process.env.LIVE_RELOAD != 0) {
-    var livereloadServer = require('livereload').createServer({ exts: [ 'jade' ]});
-    livereloadServer.watch([__dirname + '/public', __dirname + '/views']);
+  var livereloadServer = require('livereload').createServer({ exts: [ 'jade' ]});
+  livereloadServer.watch([__dirname + '/public', __dirname + '/views']);
 }
 
 app.set('port', process.env.PORT || 3000);
