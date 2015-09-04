@@ -35,3 +35,9 @@ node_modules
 .env.dev
 Procfile
 Procfile.dev
+
+# File storing credentials
+credentials.json
+
+# Database files
+data/*.db

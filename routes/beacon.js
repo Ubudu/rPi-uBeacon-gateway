@@ -9,6 +9,7 @@ var router = new express.Router();
 
 /* Set the correct header section */
 router.use(function(req, res, next) {
+  console.log(req.body);
   res.locals.headerSection = 'gateway_beacon';
   next();
 });
@@ -68,7 +69,6 @@ router.post('/', validateForm, function(req, res) {
       });
     });
   } else {
-    console.log(req.form);
     ubeacon.updateData(req.form, function(err, newBeaconData) {
       if (err != null) {
         return next(err);

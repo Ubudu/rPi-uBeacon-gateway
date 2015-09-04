@@ -14,7 +14,9 @@ nav.navbar.navbar-inverse.navbar-fixed-top
                     a#configure-my-beacon-header-link(href='/gateway-beacon')
                         | Gateway beacon &nbsp;
                         span.glyphicon.glyphicon-refresh.spin#beacon-status
-                li(class= (headerSection === 'system_infos') ? 'active': undefined)
+                li(class= (headerSection === 'system_infos') ? 'active' : undefined)
                     a(href='/system-infos') System infos
-                li(class= (headerSection === 'mesh_network') ? 'active': undefined)
+                li(class= (headerSection === 'mesh_network') ? 'active' : undefined)
                     a(href='/mesh-network') Mesh network
+                li(class= (headerSection === 'venue_infos') ? 'active' : undefined)
+                    a(href='/venue-infos') Venue infos
