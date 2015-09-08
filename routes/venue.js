@@ -45,6 +45,10 @@ router.get('/', function(req, res) {
           return callback(err);
         }
 
+        if (!selectedVenue) {
+          return callback();
+        }
+
         // We get the list of beacons for the venue
         var options = {
           uri: 'https://manager.ubudu.com/u_venues/' + selectedVenue.id + '/u_beacon_devices.json',

@@ -19,103 +19,103 @@ block content
                 .col-md-3
                     .form-group
                         button.btn.btn-default.btn-block(type='submit') Submit
-
-    section
-        ul.nav.nav-tabs(role='tablist')
-            li.active(role='presentation')
-                a(href='#infos', aria-controls='infos', role='tab', data-toggle='tab') Infos
-            li(role='presentation')
-                a(href='#beacons', aria-controls='beacons', role='tab', data-toggle='tab') Beacons
-        .tab-content
-            #infos.tab-pane.active(role='tabpanel')
-                .row
-                    .col-md-7
-                        dl.dl-horizontal
-                            +infoField('Name', selectedVenue.name)
-                            +infoField('Address', selectedVenue.address)
-                            +infoField('Phone', selectedVenue.phone)
-                            +infoField('Timezone', selectedVenue.timezone)
-                            +infoField('Contact', selectedVenue.venue_mgr_name + ' ' + selectedVenue.venue_mgr_email)
-                        p
-                            a.btn.btn-primary(href='https://manager.ubudu.com/u_venues/' + selectedVenue.id + '/edit', target='_blank')
-                                | Edit this venue &nbsp;
-                                span.glyphicon.glyphicon-edit
-                    .col-md-5
-                        #map(style='height: 200px', data-lat=selectedVenue.lat, data-lng=selectedVenue.lng, data-radius=selectedVenue.default_geofence_radius*1000)
-                .row
-                    .col-md-3.col-md-offset-2
-                        h4 Opening hours
-                .row
-                    .col-md-1
-                        p
-                            strong Mon
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.mon.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.mon.close)
-                    .col-md-1
-                        p
-                            strong Tue
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.tue.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.tue.close)
-                    .col-md-1
-                        p
-                            strong Wed
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.wed.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.wed.close)
-                    .col-md-1
-                        p
-                            strong Thu
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.thu.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.thu.close)
-                    .col-md-1
-                        p
-                            strong Fri
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.fri.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.fri.close)
-                    .col-md-1
-                        p
-                            strong Sat
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.sat.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.sat.close)
-                    .col-md-1
-                        p
-                            strong Sun
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.sun.open)
-                            br
-                            =secondsToHoursMinutes(selectedVenue.opening_hours.week.sun.close)
-            #beacons.tab-pane(role='tabpanel')
-                #beacons-accordion-group.panel-group(role='tablist', aria-multiselectable=true)
-                    each node, index in selectedVenue.nodes
-                        .panel.panel-default
-                            .panel-heading(role='tab')
-                                h4.panel-title
-                                    a(role='button', data-toggle='collapse', data-parent='#beacons-accordion-group', href='#beacons-node-'+index, aria-expanded=true, aria-controls='beacons-node-'+index)
-                                        = node.major + ' / ' + node.minor + ' - Device ID: ' + (node.meshDeviceId ? node.meshDeviceId : 'Not documented')
-                            .panel-collapse.collapse(id='beacons-node-'+index, role='tabpanel')
-                                .panel-body
-                                    dl.dl-horizontal
-                                        +infoField('Name', node.name)
-                                        +infoField('Serial number', node.serial_number)
-                                        +infoField('Calibration RSSI', node.calibration_rssi + ' dB')
-                                        +infoField('Connection password', node.connection_password)
-                                        +infoField('Shared secret', node.shared_secret)
-                                        +infoField('Firmware', node.firmware_version)
-                                    p
-                                        a.btn.btn-primary(href='https://manager.ubudu.com/u_beacon_devices/' + node.id + '/edit', target='_blank')
-                                            | Edit this iBeacon device &nbsp;
-                                            span.glyphicon.glyphicon-edit
+    - if (typeof selectedVenue !== 'undefined')
+        section
+            ul.nav.nav-tabs(role='tablist')
+                li.active(role='presentation')
+                    a(href='#infos', aria-controls='infos', role='tab', data-toggle='tab') Infos
+                li(role='presentation')
+                    a(href='#beacons', aria-controls='beacons', role='tab', data-toggle='tab') Beacons
+            .tab-content
+                #infos.tab-pane.active(role='tabpanel')
+                    .row
+                        .col-md-7
+                            dl.dl-horizontal
+                                +infoField('Name', selectedVenue.name)
+                                +infoField('Address', selectedVenue.address)
+                                +infoField('Phone', selectedVenue.phone)
+                                +infoField('Timezone', selectedVenue.timezone)
+                                +infoField('Contact', selectedVenue.venue_mgr_name + ' ' + selectedVenue.venue_mgr_email)
+                            p
+                                a.btn.btn-primary(href='https://manager.ubudu.com/u_venues/' + selectedVenue.id + '/edit', target='_blank')
+                                    | Edit this venue &nbsp;
+                                    span.glyphicon.glyphicon-edit
+                        .col-md-5
+                            #map(style='height: 200px', data-lat=selectedVenue.lat, data-lng=selectedVenue.lng, data-radius=selectedVenue.default_geofence_radius*1000)
+                    .row
+                        .col-md-3.col-md-offset-2
+                            h4 Opening hours
+                    .row
+                        .col-md-1
+                            p
+                                strong Mon
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.mon.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.mon.close)
+                        .col-md-1
+                            p
+                                strong Tue
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.tue.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.tue.close)
+                        .col-md-1
+                            p
+                                strong Wed
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.wed.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.wed.close)
+                        .col-md-1
+                            p
+                                strong Thu
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.thu.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.thu.close)
+                        .col-md-1
+                            p
+                                strong Fri
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.fri.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.fri.close)
+                        .col-md-1
+                            p
+                                strong Sat
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.sat.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.sat.close)
+                        .col-md-1
+                            p
+                                strong Sun
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.sun.open)
+                                br
+                                =secondsToHoursMinutes(selectedVenue.opening_hours.week.sun.close)
+                #beacons.tab-pane(role='tabpanel')
+                    #beacons-accordion-group.panel-group(role='tablist', aria-multiselectable=true)
+                        each node, index in selectedVenue.nodes
+                            .panel.panel-default
+                                .panel-heading(role='tab')
+                                    h4.panel-title
+                                        a(role='button', data-toggle='collapse', data-parent='#beacons-accordion-group', href='#beacons-node-'+index, aria-expanded=true, aria-controls='beacons-node-'+index)
+                                            = node.major + ' / ' + node.minor + ' - Device ID: ' + (node.meshDeviceId ? node.meshDeviceId : 'Not documented')
+                                .panel-collapse.collapse(id='beacons-node-'+index, role='tabpanel')
+                                    .panel-body
+                                        dl.dl-horizontal
+                                            +infoField('Name', node.name)
+                                            +infoField('Serial number', node.serial_number)
+                                            +infoField('Calibration RSSI', node.calibration_rssi + ' dB')
+                                            +infoField('Connection password', node.connection_password)
+                                            +infoField('Shared secret', node.shared_secret)
+                                            +infoField('Firmware', node.firmware_version)
+                                        p
+                                            a.btn.btn-primary(href='https://manager.ubudu.com/u_beacon_devices/' + node.id + '/edit', target='_blank')
+                                                | Edit this iBeacon device &nbsp;
+                                                span.glyphicon.glyphicon-edit
 
 block append javascripts
     script(src='/javascripts/venue/infos.js')
