@@ -4,6 +4,7 @@ var uBeaconLib = require('node-ubeacon-uart-lib');
 var async = require('async');
 var debug = require('debug')('uart');
 var observer = require('node-observer');
+var request = require('request');
 
 var ubeacon = new uBeaconLib.UBeaconUARTController(process.env.UART_SERIAL_PORT, process.env.UART_BAUD_RATE);
 
@@ -361,6 +362,11 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__USER, function(dstAddr, msgType, msg) {
     msg: msg
   };
   debug('MESSAGE:: Message: ' + msg + ' from ' + dstAddr);
+
+  if (process.env.ANALYTICS_SERVER) {
+    request.post(process.env.ANALYTICS_SERVER + '/mesh_messages', { json: { msg: msg } });
+  }
+
   observer.send(this, 'ubeacon:message', data);
 });
 
