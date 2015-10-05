@@ -364,7 +364,10 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__USER, function(dstAddr, msgType, msg) {
   debug('MESSAGE:: Message: ' + msg + ' from ' + dstAddr);
 
   if (process.env.ANALYTICS_SERVER) {
-    request.post(process.env.ANALYTICS_SERVER + '/mesh_messages', { json: { msg: msg } });
+    request.post({
+      url: process.env.ANALYTICS_SERVER + '/mesh_messages',
+      json: { msg: msg }
+    });
   }
 
   observer.send(this, 'ubeacon:message', data);
