@@ -410,8 +410,6 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__REMOTE_MANAGEMENT, function(srcAddr, msgType
   observer.send(this, 'ubeacon:remote-management-message', data);
 });
 
-module.exports = ubeacon;
-
 var cmdBytes = {
   'mac_address': ubeacon.uartCmd.bdaddr,
   'serial_number': ubeacon.uartCmd.serialNumber,

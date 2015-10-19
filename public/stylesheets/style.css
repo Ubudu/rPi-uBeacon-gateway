@@ -193,3 +193,8 @@ p.copyright {
 #venue_infos p {
     text-align: center;
 }
+
+/* Notifications */
+.amaran.default {
+    width: 400px;
+}
