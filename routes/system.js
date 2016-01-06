@@ -15,7 +15,7 @@ router.use(function(req, res, next) {
 });
 
 /* GET /system-infos page */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   var uptime = moment.duration(os.uptime(), 'seconds');
   var uptimeDuration = uptime.format('d [days] hh:mm:ss');
 
