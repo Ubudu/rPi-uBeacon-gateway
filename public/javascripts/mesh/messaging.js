@@ -259,7 +259,7 @@ var prependToLog = function(logData) {
       } else {
         event = '<span class="glyphicon glyphicon-export"></span> Released button on the beacon connected to the box';
       }
-      alertClass = 'default';
+      alertClass = 'info';
       break;
     case 'connection':
       if (logData.connected) {
@@ -272,7 +272,7 @@ var prependToLog = function(logData) {
       break;
     default:
       event = '<span class="glyphicon glyphicon-question-sign"></span> Event unknown';
-      alertClass = 'default';
+      alertClass = 'warning';
       break;
   }
 
