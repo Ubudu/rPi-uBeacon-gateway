@@ -1,33 +1,73 @@
 #!/usr/bin/env node
 var http = require('http');
 var fs = require('fs');
+var crypto = require('crypto');
 var debug = require('debug')('web');
 
 if (fs.existsSync(__dirname + '/../.env')) {
-    require('dotenv').config({ path: __dirname + '/../.env' });
+  require('dotenv').config({ path: __dirname + '/../.env' });
 } else {
-    console.log('NO ENV FILE: program will not work');
+  console.log('NO ENV FILE: program will not work');
+}
+
+// Check that all the required configuration options are set
+if (process.env.UART_SERIAL_PORT == null) {
+  throw new Error('Invalid configuration - UART serial port not specified');
+}
+if (process.env.UART_BAUD_RATE == null) {
+  throw new Error('Invalid configuration - UART baud rate not specified');
+}
+if (process.env.NETWORK_INTERFACE_NAME == null) {
+  throw new Error('Invalid configuration - Network interface name not specified');
 }
 
 var app = require('../app');
 var io = require('../io');
 
-//
+var gatewayIdentifier = process.env.GATEWAY_IDENTIFIER;
+var idPath = __dirname + '/../id.json';
 
-// Check that all the required configuration options are set
-if (process.env.UART_SERIAL_PORT == null) {
-    throw new Error('Invalid configuration - UART serial port not specified');
-}
-if (process.env.UART_BAUD_RATE == null) {
-    throw new Error('Invalid configuration - UART baud rate not specified');
-}
-if (process.env.NETWORK_INTERFACE_NAME == null) {
-    throw new Error('Invalid configuration - Network interface name not specified');
-}
+var retrieveGatewayIdentifierFromFile = function(callback) {
+  fs.exists(idPath, function(exists) {
+    if (exists) {
+      callback(require(idPath).gatewayId);
+    } else {
+      callback();
+    }
+  });
+};
 
-var server = http.Server(app);
-io.attach(server);
+var createRandomGatewayId = function() {
+  var md5 = crypto.createHash('md5', new Date());
+  return md5.digest('hex');
+};
 
-server.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
-});
+var saveGatewayIdToFile = function(gatewayId, callback) {
+  // Save this identifier to id.json
+  fs.writeFile(idPath, JSON.stringify({ gatewayId: gatewayId }, null, 4), callback);
+};
+
+var startApp = function() {
+  var server = http.Server(app);
+  io.attach(server);
+
+  server.listen(app.get('port'), function() {
+    debug('Express server listening on port ' + server.address().port);
+  });
+};
+
+if (!gatewayIdentifier) {
+  // If the gateway identifier is not defined in the .env file, we try to load it from the id.json file
+  retrieveGatewayIdentifierFromFile(function(_gatewayIdentifier) {
+    if (!_gatewayIdentifier) {
+      _gatewayIdentifier = createRandomGatewayId();
+      saveGatewayIdToFile(_gatewayIdentifier);
+    }
+    gatewayIdentifier = _gatewayIdentifier;
+    console.log('Gateway identifier: ' + gatewayIdentifier);
+    startApp();
+  });
+} else {
+  console.log('Gateway identifier: ' + gatewayIdentifier);
+  startApp();
+}

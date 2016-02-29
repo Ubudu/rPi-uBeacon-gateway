@@ -9,7 +9,7 @@ block content
                         label(for='venue') Change venue
                 .col-md-6
                     .form-group
-                        select.form-control(name='venue', required)
+                        select#venue.form-control(name='venue', required)
                             option(value='') Select a venue...
                             - each availableVenue in availableVenues
                                 - if (selectedVenue && availableVenue._id === selectedVenue._id)

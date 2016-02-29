@@ -1,0 +1,153 @@
+[
+  {
+    "id": 12345,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 56,
+        "target": 1
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 1
+      }
+    ],
+    "created_at": "2015-08-20T14:33:18.514Z",
+    "updated_at": "2016-08-21T11:48:36.427Z",
+    "status": "ASSIGNED",
+    "assigned_to": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "id": 12346,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 55,
+        "target": 1
+      },
+      {
+        "type": "SET",
+        "command_id": 103,
+        "value": 1337,
+        "target": 1
+      }
+    ],
+    "created_at": "2015-08-21T14:33:18.514Z",
+    "updated_at": "2016-08-22T11:48:36.427Z",
+    "status": "CREATED"
+  },
+  {
+    "id": 12347,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 56,
+        "target": 10001
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 10001
+      }
+    ],
+    "created_at": "2015-08-22T14:33:18.514Z",
+    "updated_at": "2016-08-23T11:48:36.427Z",
+    "status": "ASSIGNED",
+    "assigned_to": "other_gateway"
+  },
+  {
+    "id": 12348,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 55,
+        "target": 1,
+        "result": "2a171b00030e",
+        "status": "OK"
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 1
+      }
+    ],
+    "created_at": "2015-08-22T14:33:18.514Z",
+    "updated_at": "2016-08-23T11:48:36.427Z",
+    "status": "PROGRESS",
+    "assigned_to": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "id": 12349,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 56,
+        "target": 1,
+        "result": "2a171b00030e",
+        "status": "OK"
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 1,
+        "result": 65535,
+        "status": "OK"
+      }
+    ],
+    "created_at": "2015-08-20T14:33:18.514Z",
+    "updated_at": "2016-08-21T11:48:36.427Z",
+    "status": "COMPLETED",
+    "assigned_to": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "id": 12350,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 56,
+        "target": 1,
+        "result": "2a171b00030e",
+        "status": "OK"
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 1,
+        "status": "ERROR"
+      }
+    ],
+    "created_at": "2015-08-20T14:33:18.514Z",
+    "updated_at": "2016-08-21T11:48:36.427Z",
+    "status": "ERROR",
+    "assigned_to": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  {
+    "id": 12351,
+    "commands": [
+      {
+        "type": "GET",
+        "command_id": 56,
+        "target": 1,
+        "result": "2a171b00030e",
+        "status": "OK"
+      },
+      {
+        "type": "SET",
+        "command_id": 102,
+        "value": 65535,
+        "target": 1,
+        "status": "ERROR"
+      }
+    ],
+    "created_at": "2015-08-20T14:33:18.514Z",
+    "updated_at": "2016-08-21T11:48:36.427Z",
+    "status": "ERROR",
+    "assigned_to": "other_gateway"
+  }
+]

@@ -38,6 +38,7 @@ Procfile.dev
 
 # File storing credentials
 credentials.json
+id.json
 
 # Database files
 data/*.db

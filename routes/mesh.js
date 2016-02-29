@@ -63,6 +63,8 @@ router.post('/generic-messages', function(req, res) {
 router.post('/remote-management-messages', function(req, res) {
   var data = req.body;
 
+  console.log(data);
+
   var dataBytes = hexStringToString(data.value);
   var cmdByte = cmdBytes.hasOwnProperty(data.cmd) ? cmdBytes[data.cmd] : 0xFF;
 

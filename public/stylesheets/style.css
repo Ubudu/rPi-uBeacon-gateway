@@ -193,3 +193,23 @@ p.copyright {
 #venue_infos p {
     text-align: center;
 }
+
+/* Tasks */
+.task-command-type {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.task-command-name {
+    font-weight: bold;
+}
+
+.task-command-value {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.task-command-target {
+    font-weight: bold;
+    color: #2c3e50;
+}

@@ -33,7 +33,7 @@ router.use(function(req, res, next) {
 });
 
 /* GET venue infos page. */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   // Load the credentials
   var credentials = require('../credentials.json');
   var token = credentials.token;
@@ -57,12 +57,10 @@ router.get('/', function(req, res) {
           qs: { access_token: token }
         };
         request.get(options, function(err, response, body) {
-          console.log(body);
           if (err) {
             return callback(err);
           }
           async.eachSeries(body.u_beacon_devices, function(remoteUBeaconDevice, callback2) {
-            debug('upserting', remoteUBeaconDevice);
             // Upsert each UBeacon device
             db.nodes.update({ id: remoteUBeaconDevice.id }, { $set: remoteUBeaconDevice }, { upsert: true }, callback2);
           }, function(err) {
@@ -116,8 +114,6 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res, next) {
   var venueId = req.body.venue;
-
-  console.log('venue Id', venueId);
 
   async.series([
       function(callback) {

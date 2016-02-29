@@ -1,0 +1,208 @@
+extends ../layout
+
+block content
+    section
+        form.form-narrow(action='/tasks/reload', method='post')
+            .row
+                .col-md-12
+                    .form-group
+                        button.btn.btn-default.btn-block(type='submit') Reload the queue of tasks from the BO
+
+    section
+        h1 Tasks
+        ul.nav.nav-tabs(role='tablist')
+            li.active(role='presentation')
+                a(href='#assigned_to_me', aria-controls='assigned_to_me', role='tab', data-toggle='tab') Assigned to me
+            li(role='presentation')
+                a(href='#upcoming', aria-controls='upcoming', role='tab', data-toggle='tab') Upcoming
+            li(role='presentation')
+                a(href='#progress', aria-controls='progress', role='tab', data-toggle='tab')
+                    span.glyphicon.glyphicon-tasks
+                    | &nbsp;Progress
+            li(role='presentation')
+                a(href='#completed', aria-controls='completed', role='tab', data-toggle='tab')
+                    span.glyphicon.glyphicon-ok
+                    | &nbsp;Completed
+            li(role='presentation')
+                a(href='#errored', aria-controls='errored', role='tab', data-toggle='tab')
+                    span.glyphicon.glyphicon-warning-sign
+                    | &nbsp;Errored
+            li(role='presentation')
+                a(href='#assigned_to_other', aria-controls='assigned_to_other', role='tab', data-toggle='tab')
+                    span.glyphicon.glyphicon-hand-right
+                    | &nbsp;Assigned to other gateway
+        .tab-content
+            #assigned_to_me.tab-pane.active(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                            th Status
+                    tbody
+                        each task in assignedToMeTasks
+                            tr(class=(task.status == "CREATED" || task.status == "ASSIGNED" || task.status == "PROGRESS") ? "info" : (task.status == "COMPLETED" ? "success" : (task.status == "ERROR" ? "danger" : undefined)))
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    |&nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                td= task.status
+            #upcoming.tab-pane(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                    tbody
+                        each task in upcomingTasks
+                            tr
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+            #progress.tab-pane(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                    tbody
+                        each task in progressTasks
+                            tr
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+            #completed.tab-pane(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                    tbody
+                        each task in completedTasks
+                            tr
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+            #errored.tab-pane(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                    tbody
+                        each task in erroredTasks
+                            tr
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+            #assigned_to_other.tab-pane(role='tabpanel')
+                table.table.table-striped
+                    thead
+                        tr
+                            th ID
+                            th Commands
+                            th Status
+                    tbody
+                        each task in assignedToAnotherGatewayTasks
+                            tr(class=(task.status == "CREATED" || task.status == "ASSIGNED" || task.status == "PROGRESS") ? "info" : (task.status == "COMPLETED" ? "success" : (task.status == "ERROR" ? "danger" : undefined)))
+                                th= task.id
+                                td
+                                    ul
+                                        each command in task.commands
+                                            li
+                                                if (command.type == "GET")
+                                                    span.task-command-type GET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                                else
+                                                    span.task-command-type SET
+                                                    | &nbsp;
+                                                    span.task-command-name= cmdNames[command.command_id]
+                                                    | &nbsp;to&nbsp;
+                                                    span.task-command-value= command.value
+                                                    | &nbsp;on node&nbsp;
+                                                    span.task-command-target= command.target
+                                td= task.status
+
+
