@@ -8,6 +8,9 @@ var request = require('request');
 
 var ubeacon = new uBeaconLib.UBeaconUARTController(process.env.UART_SERIAL_PORT, process.env.UART_BAUD_RATE);
 
+var idPath = __dirname + '/id.json';
+var gatewayIdentifier = require(idPath).gatewayId;
+
 ubeacon.getData = function(callback) {
   var data = {};
 
@@ -363,10 +366,22 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__USER, function(dstAddr, msgType, msg) {
   };
   debug('MESSAGE:: Message: ' + msg + ' from ' + dstAddr);
 
-  if (process.env.ANALYTICS_SERVER) {
+  if (process.env.FORWARD_MESH_WEBSERVICE) {
+    debug('FORWARD_MESSAGE::', {
+      message: msg,
+      nodeId: dstAddr,
+      gatewayId: gatewayIdentifier,
+      timestamp: (new Date()).getTime()/1000
+    });
+
     request.post({
-      url: process.env.ANALYTICS_SERVER + '/mesh_messages',
-      json: { msg: msg }
+      url: process.env.FORWARD_MESH_WEBSERVICE,
+      json: {
+        message: msg,
+        nodeId: dstAddr,
+        gatewayId: gatewayIdentifier,
+        timestamp: (new Date()).getTime()/1000
+      }
     });
   }
 
