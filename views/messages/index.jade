@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+    .panel.panel-default
+        .panel-heading
+            h2.panel-title
+                | Messages
+                a#messages-logs-clear.pull-right(href='#')
+                    | clear
+                    span.glyphicon.glyphicon-trash
+        #messages-logs-container.panel-body
+
+block append javascripts
+    script(src='/javascripts/messages/messages.js')

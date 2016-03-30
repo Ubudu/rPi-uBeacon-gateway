@@ -30,6 +30,10 @@ io.on('connection', function(socket) {
   observer.subscribe(socket, 'ubeacon:remote-management-message', function(ubeacon, data) {
     socket.emit('ubeacon:remote-management-message', data);
   });
+
+  observer.subscribe(socket, 'messages:message', function(router, data) {
+    socket.emit('messages:message', data);
+  });
 });
 
 module.exports = io;

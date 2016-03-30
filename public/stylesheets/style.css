@@ -213,3 +213,11 @@ p.copyright {
     font-weight: bold;
     color: #2c3e50;
 }
+
+.message-time {
+    padding: 0 10px;
+}
+
+.message-content {
+    padding: 0 10px;
+}

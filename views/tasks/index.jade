@@ -11,9 +11,9 @@ block content
     section
         h1 Tasks
         ul.nav.nav-tabs(role='tablist')
-            li.active(role='presentation')
-                a(href='#assigned_to_me', aria-controls='assigned_to_me', role='tab', data-toggle='tab') Assigned to me
             li(role='presentation')
+                a(href='#assigned_to_me', aria-controls='assigned_to_me', role='tab', data-toggle='tab') Assigned to me
+            li.active(role='presentation')
                 a(href='#upcoming', aria-controls='upcoming', role='tab', data-toggle='tab') Upcoming
             li(role='presentation')
                 a(href='#progress', aria-controls='progress', role='tab', data-toggle='tab')
@@ -32,7 +32,7 @@ block content
                     span.glyphicon.glyphicon-hand-right
                     | &nbsp;Assigned to other gateway
         .tab-content
-            #assigned_to_me.tab-pane.active(role='tabpanel')
+            #assigned_to_me.tab-pane(role='tabpanel')
                 table.table.table-striped
                     thead
                         tr
@@ -62,12 +62,13 @@ block content
                                                     | &nbsp;on node&nbsp;
                                                     span.task-command-target= command.target
                                 td= task.status
-            #upcoming.tab-pane(role='tabpanel')
+            #upcoming.tab-pane.active(role='tabpanel')
                 table.table.table-striped
                     thead
                         tr
                             th ID
                             th Commands
+                            th Actions
                     tbody
                         each task in upcomingTasks
                             tr
@@ -90,6 +91,12 @@ block content
                                                     span.task-command-value= command.value
                                                     | &nbsp;on node&nbsp;
                                                     span.task-command-target= command.target
+                                td
+                                    .btn-group
+                                        form(action="/tasks/#{task.id}/execute", method="post")
+                                            button.btn.btn-primary(type="submit")
+                                                span.glyphicon.glyphicon-save
+                                                | &nbsp;Execute
             #progress.tab-pane(role='tabpanel')
                 table.table.table-striped
                     thead

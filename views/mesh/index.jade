@@ -121,7 +121,9 @@ block content
                                     .row
                                         .col-lg-8.col-md-12
                                             .form-group
-                                                input.form-control#mesh-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
+                                                .input-group
+                                                    span.input-group-addon 0x
+                                                    input.form-control#mesh-value(type='text', placeholder='Value', name='value', data-inputmask="'mask': 'h{2,32}'")
                                         .col-lg-4.col-md-12
                                             .form-group
                                                 button#mesh-management-send.btn.btn-primary.btn-block(type='submit')

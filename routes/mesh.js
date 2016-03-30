@@ -53,7 +53,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/generic-messages', function(req, res) {
   var data = req.body;
-  data.dstAddr = parseInt(data.dstAddr, 16);
+  //data.dstAddr = parseInt(data.dstAddr, 16);
   ubeacon.sendMeshGenericMessage(data.dstAddr, data.msg);
   data.timestamp = (new Date()).getTime();
   data.msgType = 0x02;
@@ -68,17 +68,23 @@ router.post('/remote-management-messages', function(req, res) {
   var dataBytes = hexStringToString(data.value);
   var cmdByte = cmdBytes.hasOwnProperty(data.cmd) ? cmdBytes[data.cmd] : 0xFF;
 
+  console.log(cmdByte);
+
   var isGet = (data.cmdMode === 'get');
 
   var cmdBuffer = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false); // eslint-disable-line
 
-  ubeacon.sendMeshRemoteManagementMessage(parseInt(data.dstAddr, 16), cmdBuffer.toString(), function() { // eslint-disable-line
+  ubeacon.sendMeshRemoteManagementMessage(data.dstAddr, cmdBuffer.toString(), function() { // eslint-disable-line
     console.log(arguments);
   });
 
-  data.dstAddr = parseInt(data.dstAddr, 16);
+  //data.dstAddr = parseInt(data.dstAddr, 16);
   data.timestamp = (new Date()).getTime();
   data.msgType = 0x03;
+
+  if (data.cmd == 'major' || data.cmd == 'minor') {
+    data.value = parseInt(data.value, 16);
+  }
 
   return res.json(data);
 });

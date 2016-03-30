@@ -16,7 +16,8 @@ $(function() {
   genericMessageSendBtn.on('click', function(event) {
     event.preventDefault();
 
-    var dstAddr = getDstAddrAsHex();
+    //var dstAddr = getDstAddrAsHex();
+    var dstAddr = parseInt(targetNodeInput.val());
     var msg = genericMessageInput.val();
 
     sendGenericMessage(dstAddr, msg);
@@ -34,7 +35,8 @@ $(function() {
     // split id 'shortuct-led-green-on' by '-' and get 'on' or 'off'
     var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-    var dstAddr = getDstAddrAsHex();
+    //var dstAddr = getDstAddrAsHex();
+    var dstAddr = parseInt(targetNodeInput.val());
     var cmdMode = 'set';
     var cmd = 'led_state';
     var value = setOn ? 0x02 : 0x00;
@@ -49,7 +51,8 @@ $(function() {
     // split id 'shortcut-advertising-on' by '-' and get 'on' or 'off'
     var setOn = $(this).attr('id').split('-').pop() == 'on';
 
-    var dstAddr = getDstAddrAsHex();
+    //var dstAddr = getDstAddrAsHex();
+    var dstAddr = parseInt(targetNodeInput.val());
     var cmdMode = 'set';
     var cmd = 'advertising_state';
     var value = setOn ? 0x01 : 0x00;
@@ -61,7 +64,8 @@ $(function() {
   managementShortcutBatteryLevelBtn.on('click', function(event) {
     event.preventDefault();
 
-    var dstAddr = getDstAddrAsHex();
+    //var dstAddr = getDstAddrAsHex();
+    var dstAddr = parseInt(targetNodeInput.val());
     var cmdMode = 'get';
     var cmd = 'battery_level';
     var value = null;
@@ -105,7 +109,8 @@ $(function() {
   managementSendBtn.on('click', function(event) {
     event.preventDefault();
 
-    var dstAddr = getDstAddrAsHex();
+    //var dstAddr = getDstAddrAsHex();
+    var dstAddr = parseInt(targetNodeInput.val());
     var cmdMode = managementCommandInput.val();
     var cmd = managementPropertySelect.val();
     var value = managementValueInput.val();

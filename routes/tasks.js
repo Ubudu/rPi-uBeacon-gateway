@@ -5,6 +5,7 @@ var fs = require('fs');
 var router = new express.Router();
 var debug = require('debug')('web');
 var db = require('../db');
+var async = require('async');
 
 var credentialsPath = __dirname + '/../credentials.json';
 var idPath = __dirname + '/../id.json';
@@ -110,6 +111,32 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/* Execute a task */
+router.post('/:id/execute', function(req, res, next) {
+  db.tasks.findOne({ id: parseInt(req.params.id) }).exec(function(err, task) {
+    if (err) {
+      return next(err);
+    }
+    if (!task) {
+      return next(new Error('Not found'));
+    }
+    if (task.status != "ASSIGNED" || task.assigned_to != gatewayIdentifier) {
+      return next(new Error('Task is not assigned to this gateway'));
+    }
+
+    async.eachSeries(task.commands, function(command, callback) {
+      var dataBytes = hexStringToString(command.value ? command.value : '');
+      var cmdByte = command.command_id;
+      var isGet = command.type === 'GET';
+      var cmdBuffer = ubeacon.getCommandString(isGet, cmdByte, new Buffer(dataBytes), false);
+      ubeacon.sendMeshRemoteManagementMessage(command.target, cmdBuffer.toString());
+      setTimeout(callback, 5000);
+    }, function(err) {
+      return res.redirect('/tasks');
+    });
+  });
+});
+
 var uartHumanReadableCmd = {
   none:                   'None',   //
   protocolVersion:        'Protocol version',
@@ -152,7 +179,13 @@ for (var key in ubeacon.uartCmd) {
   cmdNames[cmd] = name;
 }
 
-console.log(cmdNames);
-
+var hexStringToString = function(hexStr)  {
+  var str = '';
+  for (var i = 0 ; i < hexStr.length ; i += 2) {
+    var c = String.fromCharCode(parseInt(hexStr.substr(i, 2), 16));
+    str += c;
+  }
+  return str;
+};
 
 module.exports = { path: '/tasks', router: router };
