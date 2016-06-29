@@ -62,7 +62,6 @@ router.get('/', function(req, res) {
             return callback(err);
           }
           async.eachSeries(body.u_beacon_devices, function(remoteUBeaconDevice, callback2) {
-            debug('upserting', remoteUBeaconDevice);
             // Upsert each UBeacon device
             db.nodes.update({ id: remoteUBeaconDevice.id }, { $set: remoteUBeaconDevice }, { upsert: true }, callback2);
           }, function(err) {
