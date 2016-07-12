@@ -363,11 +363,14 @@ ubeacon.on(ubeacon.EVENTS.MESH_MSG__USER, function(dstAddr, msgType, msg) {
   };
   debug('MESSAGE:: Message: ' + msg + ' from ' + dstAddr);
 
-  if (process.env.ANALYTICS_SERVER) {
+  if (process.env.SHOULD_FORWARD_MESH_MESSAGES && process.env.FORWARD_MESH_MESSAGES_URL) {
+    debug('FORWARD:: Forwarding message ' + msg + ' to ' + process.env.FORWARD_MESH_MESSAGES_URL);
     request.post({
-      url: process.env.ANALYTICS_SERVER + '/mesh_messages',
-      json: { msg: msg }
+      url: process.env.FORWARD_MESH_MESSAGES_URL,
+      json: { message: msg }
     });
+  } else {
+    debug('FORWARD:: No forward');
   }
 
   observer.send(this, 'ubeacon:message', data);
